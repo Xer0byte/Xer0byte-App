@@ -1,4 +1,4 @@
-name: Build & Release Xer0byte APK
+name: Build & Release Xer0byte APK and iOS Package
 
 on:
   push:
@@ -10,7 +10,7 @@ permissions:
 
 jobs:
   build-apk:
-    name: Build Android APK
+    name: Build Android APK & Package iOS
     runs-on: ubuntu-latest
 
     steps:
@@ -32,40 +32,49 @@ jobs:
       - name: Build Debug APK
         run: ./gradlew assembleDebug --stacktrace
 
-      - name: Rename APK for Easy Identification
+      - name: Prepare Release Artifacts (APK & iOS Guide)
         run: |
-          mkdir -p output_apk
-          cp app/build/outputs/apk/debug/app-debug.apk output_apk/Xer0byte-Bluetooth-Messenger.apk
+          mkdir -p output_release
+          cp app/build/outputs/apk/debug/app-debug.apk output_release/Xer0byte-Android.apk
+          cp iOS_INSTALLATION_GUIDE.md output_release/Xer0byte-iOS-Guide.txt
 
-      - name: Upload APK as Workflow Artifact
+      - name: Upload Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: Xer0byte-Android-APK
-          path: output_apk/Xer0byte-Bluetooth-Messenger.apk
+          name: Xer0byte-Release-Package
+          path: output_release/*
           retention-days: 30
 
-      - name: Create Automated GitHub Release with Direct APK Download Link
+      - name: Publish Automated GitHub Release
         uses: softprops/action-gh-release@v2
-        if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
         with:
           tag_name: "v1.0-${{ github.run_number }}"
-          name: "Xer0byte APK Build #${{ github.run_number }}"
+          name: "🚀 Xer0byte Release Build #${{ github.run_number }}"
           body: |
-            ### 📱 Xer0byte — Offline Bluetooth Messenger
-            **Organization:** Xer0byte
-            **Founder & Owner:** Ghaznain Ahmad
+            # 🚀 Xer0byte — Offline Bluetooth Messenger
+            **Organization:** Xer0byte  
+            **Founder & Owner:** Ghaznain Ahmad  
+            **Architecture:** 100% Offline Bluetooth RFCOMM Mesh (Zero Internet / SIM)
 
             ---
-            ### ⬇️ Direct Download Link:
-            Click below to download and install the APK directly on your phone:
-            - **[Download Xer0byte-Bluetooth-Messenger.apk](https://github.com/${{ github.repository }}/releases/download/v1.0-${{ github.run_number }}/Xer0byte-Bluetooth-Messenger.apk)**
+            ## ⬇️ Direct Download Links:
 
-            #### Features:
-            - 100% Offline via Bluetooth RFCOMM Sockets (Zero Internet / SIM)
-            - Latest WhatsApp user interface
-            - Multi-peer concurrent mesh communication
-            - Real-time online green dots
-            - Voice notes, photos, documents, and Bluetooth calling
-          files: output_apk/Xer0byte-Bluetooth-Messenger.apk
+            ### 📱 For Android Users:
+            - **[👉 CLICK HERE TO DOWNLOAD ANDROID APK (Xer0byte-Android.apk)](https://github.com/${{ github.repository }}/releases/download/v1.0-${{ github.run_number }}/Xer0byte-Android.apk)**
+
+            ### 🍏 For iOS (iPhone & iPad) Users:
+            - **[👉 CLICK HERE FOR iOS INSTALLATION GUIDE](https://github.com/${{ github.repository }}/releases/download/v1.0-${{ github.run_number }}/Xer0byte-iOS-Guide.txt)**
+            - **[🌐 Instant Safari Live Web App](https://ais-pre-rwnp7qqnlqk43a6wrusrox-868695915078.asia-southeast1.run.app)** (Add to Home Screen)
+
+            ---
+            ### ✨ Features Included in this Build:
+            - **Official Xer0byte Logo** launcher icon and top header branding
+            - **Prominent Green Dots (`🟢`)** showing active peer-to-peer connection
+            - **Multi-Peer Simultaneous Mesh**: Connect and talk to multiple phones at the same time
+            - **WhatsApp User Interface**: 4 Tabs (Chats, Updates/Stories, Communities, Calls)
+            - **Offline Media & Calling**: Voice notes with audio waveforms, photos, live locations, documents, and Bluetooth call screen
+          files: |
+            output_release/Xer0byte-Android.apk
+            output_release/Xer0byte-iOS-Guide.txt
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
