@@ -35,7 +35,13 @@ jobs:
       - name: Prepare Release Artifacts (APK & iOS Guide)
         run: |
           mkdir -p output_release
-          cp app/build/outputs/apk/debug/app-debug.apk output_release/Xer0byte-Android.apk
+          if [ -f app/build/outputs/apk/debug/app-debug.apk ]; then
+            cp app/build/outputs/apk/debug/app-debug.apk output_release/Xer0byte.apk
+            cp app/build/outputs/apk/debug/app-debug.apk output_release/Xer0byte-Android.apk
+          elif [ -f Xer0byte.apk ]; then
+            cp Xer0byte.apk output_release/Xer0byte.apk
+            cp Xer0byte.apk output_release/Xer0byte-Android.apk
+          fi
           cp iOS_INSTALLATION_GUIDE.md output_release/Xer0byte-iOS-Guide.txt
 
       - name: Upload Artifacts
@@ -50,10 +56,12 @@ jobs:
         uses: softprops/action-gh-release@v2
         continue-on-error: true
         with:
-          tag_name: "v1.0-${{ github.run_number }}"
-          name: "🚀 Xer0byte Release Build #${{ github.run_number }}"
+          tag_name: "v1.0.0"
+          name: "🚀 Xer0byte v1.0.0 — Official Offline Bluetooth Messenger (Founder: Ghaznain Ahmad)"
+          draft: false
+          prerelease: false
           body: |
-            # 🚀 Xer0byte — Offline Bluetooth Messenger
+            # 🚀 Xer0byte — Offline Bluetooth Messenger (v1.0.0)
             **Organization:** Xer0byte  
             **Founder & Owner:** Ghaznain Ahmad  
             **Architecture:** 100% Offline Bluetooth RFCOMM Mesh (Zero Internet / SIM)
@@ -62,11 +70,12 @@ jobs:
             ## ⬇️ Direct Download Links:
 
             ### 📱 For Android Users:
-            - **[👉 CLICK HERE TO DOWNLOAD ANDROID APK (Xer0byte-Android.apk)](https://github.com/${{ github.repository }}/releases/download/v1.0-${{ github.run_number }}/Xer0byte-Android.apk)**
+            - **[👉 CLICK HERE TO DOWNLOAD Xer0byte.apk](https://github.com/${{ github.repository }}/releases/download/v1.0.0/Xer0byte.apk)**
+            - **[👉 ALTERNATE LINK (Xer0byte-Android.apk)](https://github.com/${{ github.repository }}/releases/download/v1.0.0/Xer0byte-Android.apk)**
             - Or download directly from repository root: `Xer0byte.apk`
 
             ### 🍏 For iOS (iPhone & iPad) Users:
-            - **[👉 CLICK HERE FOR iOS INSTALLATION GUIDE](https://github.com/${{ github.repository }}/releases/download/v1.0-${{ github.run_number }}/Xer0byte-iOS-Guide.txt)**
+            - **[👉 CLICK HERE FOR iOS INSTALLATION GUIDE](https://github.com/${{ github.repository }}/releases/download/v1.0.0/Xer0byte-iOS-Guide.txt)**
             - **[🌐 Instant Safari Live Web App](https://ais-pre-rwnp7qqnlqk43a6wrusrox-868695915078.asia-southeast1.run.app)** (Add to Home Screen)
 
             ---
@@ -77,6 +86,7 @@ jobs:
             - **WhatsApp User Interface**: 4 Tabs (Chats, Updates/Stories, Communities, Calls)
             - **Offline Media & Calling**: Voice notes with audio waveforms, photos, live locations, documents, and Bluetooth call screen
           files: |
+            output_release/Xer0byte.apk
             output_release/Xer0byte-Android.apk
             output_release/Xer0byte-iOS-Guide.txt
         env:
