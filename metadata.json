@@ -1,0 +1,6 @@
+{
+  "name": "Xer0byte",
+  "description": "Offline Bluetooth Chat app by Xer0byte (Owner: Ghaznain Ahmad) with the complete WhatsApp interface and features.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

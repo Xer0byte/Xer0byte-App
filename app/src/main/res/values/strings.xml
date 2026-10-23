@@ -1,0 +1,20 @@
+<resources>
+    <string name="app_name">Xer0byte</string>
+    <string name="org_name">Xer0byte</string>
+    <string name="owner_name">Ghaznain Ahmad</string>
+    <string name="app_tagline">Offline Bluetooth Chat</string>
+    <string name="tab_chats">Chats</string>
+    <string name="tab_updates">Updates</string>
+    <string name="tab_communities">Communities</string>
+    <string name="tab_calls">Calls</string>
+    <string name="search_hint">Search…</string>
+    <string name="type_message_hint">Message</string>
+    <string name="bluetooth_connected">Bluetooth Connected</string>
+    <string name="bluetooth_scanning">Scanning Bluetooth…</string>
+    <string name="bluetooth_listening">Ready for Bluetooth Connections</string>
+    <string name="bluetooth_offline">Bluetooth Offline</string>
+    <string name="menu_settings">Settings</string>
+    <string name="menu_bluetooth_center">Bluetooth Devices</string>
+    <string name="menu_new_group">New group</string>
+    <string name="menu_starred">Starred messages</string>
+</resources>
