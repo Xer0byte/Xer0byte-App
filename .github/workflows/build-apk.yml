@@ -46,7 +46,9 @@ jobs:
           retention-days: 30
 
       - name: Publish Automated GitHub Release
+        id: create_release
         uses: softprops/action-gh-release@v2
+        continue-on-error: true
         with:
           tag_name: "v1.0-${{ github.run_number }}"
           name: "🚀 Xer0byte Release Build #${{ github.run_number }}"
@@ -61,13 +63,14 @@ jobs:
 
             ### 📱 For Android Users:
             - **[👉 CLICK HERE TO DOWNLOAD ANDROID APK (Xer0byte-Android.apk)](https://github.com/${{ github.repository }}/releases/download/v1.0-${{ github.run_number }}/Xer0byte-Android.apk)**
+            - Or download directly from repository root: `Xer0byte.apk`
 
             ### 🍏 For iOS (iPhone & iPad) Users:
             - **[👉 CLICK HERE FOR iOS INSTALLATION GUIDE](https://github.com/${{ github.repository }}/releases/download/v1.0-${{ github.run_number }}/Xer0byte-iOS-Guide.txt)**
             - **[🌐 Instant Safari Live Web App](https://ais-pre-rwnp7qqnlqk43a6wrusrox-868695915078.asia-southeast1.run.app)** (Add to Home Screen)
 
             ---
-            ### ✨ Features Included in this Build:
+            ### ✨ Features Included:
             - **Official Xer0byte Logo** launcher icon and top header branding
             - **Prominent Green Dots (`🟢`)** showing active peer-to-peer connection
             - **Multi-Peer Simultaneous Mesh**: Connect and talk to multiple phones at the same time
