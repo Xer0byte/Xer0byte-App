@@ -63,14 +63,16 @@ fun MainApp(viewModel: ChatViewModel = viewModel()) {
                 arrayOf(
                     Manifest.permission.BLUETOOTH_SCAN,
                     Manifest.permission.BLUETOOTH_CONNECT,
-                    Manifest.permission.BLUETOOTH_ADVERTISE
+                    Manifest.permission.BLUETOOTH_ADVERTISE,
+                    Manifest.permission.RECORD_AUDIO
                 )
             )
         } else {
             permissionLauncher.launch(
                 arrayOf(
                     Manifest.permission.ACCESS_FINE_LOCATION,
-                    Manifest.permission.ACCESS_COARSE_LOCATION
+                    Manifest.permission.ACCESS_COARSE_LOCATION,
+                    Manifest.permission.RECORD_AUDIO
                 )
             )
         }

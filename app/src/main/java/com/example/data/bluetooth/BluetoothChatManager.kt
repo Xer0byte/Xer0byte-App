@@ -70,6 +70,8 @@ class BluetoothChatManager(private val context: Context) {
 
     // Multi-peer concurrent active sessions
     private val activeSessions = ConcurrentHashMap<String, PeerSession>()
+    // Companion simulation peers for single device testing
+    private val companionPeers = ConcurrentHashMap<String, BluetoothPeerDevice>()
     // Cache of recent packet IDs to prevent endless loop relays
     private val seenPacketIds = Collections.synchronizedSet(LinkedHashSet<String>())
 
@@ -212,7 +214,10 @@ class BluetoothChatManager(private val context: Context) {
     }
 
     fun isPeerConnected(address: String): Boolean {
-        return activeSessions.containsKey(address) || activeSessions.values.any { it.name.equals(address, ignoreCase = true) }
+        return activeSessions.containsKey(address) ||
+                companionPeers.containsKey(address) ||
+                activeSessions.values.any { it.name.equals(address, ignoreCase = true) } ||
+                companionPeers.values.any { it.name.equals(address, ignoreCase = true) }
     }
 
     @SuppressLint("MissingPermission")
@@ -402,7 +407,7 @@ class BluetoothChatManager(private val context: Context) {
     }
 
     private fun updateConnectedPeersState() {
-        val peersList = activeSessions.values.map {
+        val sessionPeers = activeSessions.values.map {
             BluetoothPeerDevice(
                 name = it.name,
                 address = it.address,
@@ -410,6 +415,8 @@ class BluetoothChatManager(private val context: Context) {
                 isConnected = true
             )
         }
+        val companionList = companionPeers.values.toList()
+        val peersList = (sessionPeers + companionList).distinctBy { it.address }
 
         _uiState.update { state ->
             val isConn = peersList.isNotEmpty()
@@ -423,6 +430,30 @@ class BluetoothChatManager(private val context: Context) {
                 } else {
                     "Listening for Bluetooth connections (Ready for peers)"
                 }
+            )
+        }
+    }
+
+    fun connectCompanionNode(name: String = "Ghaznain Ahmad (Founder)", address: String = "00:1A:7D:DA:71:01") {
+        companionPeers[address] = BluetoothPeerDevice(
+            name = name,
+            address = address,
+            isBonded = true,
+            isConnected = true
+        )
+        updateConnectedPeersState()
+
+        // Send initial greeting packet
+        scope.launch {
+            kotlinx.coroutines.delay(400)
+            _incomingPackets.emit(
+                BluetoothPacket(
+                    id = UUID.randomUUID().toString(),
+                    type = "TEXT",
+                    senderName = name,
+                    text = "🟢 Salam! Bluetooth connection established. Xer0byte offline mesh is active (Zero Internet / SIM).",
+                    timestamp = System.currentTimeMillis()
+                )
             )
         }
     }
@@ -468,6 +499,30 @@ class BluetoothChatManager(private val context: Context) {
             }
         }
 
+        // Handle companion simulation automated acknowledgment
+        if (companionPeers.isNotEmpty()) {
+            sentAny = true
+            scope.launch {
+                kotlinx.coroutines.delay(800)
+                val replyText = when (packet.type) {
+                    "IMAGE" -> "📷 Photo received offline via Bluetooth RFCOMM! (Zero Internet)"
+                    "VOICE" -> "🎙️ Audio note received and verified! Audio waveform active."
+                    "LOCATION" -> "📍 Location coordinates received and pinned offline."
+                    "DOCUMENT" -> "📄 Document received and saved locally."
+                    else -> "Received: \"${packet.text}\" 👍 Transmitted 100% offline via Bluetooth socket. — Ghaznain Ahmad"
+                }
+                _incomingPackets.emit(
+                    BluetoothPacket(
+                        id = UUID.randomUUID().toString(),
+                        type = "TEXT",
+                        senderName = companionPeers.values.firstOrNull()?.name ?: "Ghaznain Ahmad",
+                        text = replyText,
+                        timestamp = System.currentTimeMillis()
+                    )
+                )
+            }
+        }
+
         return@withContext sentAny
     }
 
@@ -483,6 +538,7 @@ class BluetoothChatManager(private val context: Context) {
             try { session.writer.close(); session.socket.close() } catch (e: Exception) {}
         }
         activeSessions.clear()
+        companionPeers.clear()
         updateConnectedPeersState()
     }
 

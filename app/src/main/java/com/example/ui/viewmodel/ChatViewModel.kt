@@ -232,12 +232,10 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
 
     fun simulateNearbyNodeConnection() {
         viewModelScope.launch {
-            val simulationDevice = BluetoothPeerDevice(
+            bluetoothManager.connectCompanionNode(
                 name = "Ghaznain Ahmad (Xer0byte)",
-                address = "BT-00:1A:7D:DA:71:01",
-                isBonded = true
+                address = "00:1A:7D:DA:71:01"
             )
-            connectToBluetoothDevice(simulationDevice)
         }
     }
 

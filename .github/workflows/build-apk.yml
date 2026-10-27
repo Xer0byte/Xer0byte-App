@@ -57,8 +57,57 @@ jobs:
           path: output_release/*
           retention-days: 30
 
-      - name: Publish Automated GitHub Release
+      - name: Generate Release Notes
+        run: |
+          cat << 'EOF' > release_body.md
+          # 🚀 Xer0byte — Offline Bluetooth Messenger (v1.0.0)
+          **Organization:** Xer0byte  
+          **Founder & Owner:** Ghaznain Ahmad  
+          **Architecture:** 100% Offline Bluetooth RFCOMM Mesh (Zero Internet / SIM)
+
+          ---
+          ## ⬇️ Direct Download Links:
+
+          ### 📱 For Android Users:
+          - **[👉 CLICK HERE TO DOWNLOAD Xer0byte.apk](https://github.com/${{ github.repository }}/releases/download/v1.0.0/Xer0byte.apk)**
+          - **[👉 ALTERNATE LINK (Xer0byte-Android.apk)](https://github.com/${{ github.repository }}/releases/download/v1.0.0/Xer0byte-Android.apk)**
+          - Or download directly from repository root: `Xer0byte.apk`
+
+          ### 🍏 For iOS (iPhone & iPad) Users:
+          - **[👉 CLICK HERE FOR iOS INSTALLATION GUIDE](https://github.com/${{ github.repository }}/releases/download/v1.0.0/Xer0byte-iOS-Guide.txt)**
+          - **[🌐 Instant Safari Live Web App](https://ais-pre-rwnp7qqnlqk43a6wrusrox-868695915078.asia-southeast1.run.app)** (Add to Home Screen)
+
+          ---
+          ### ✨ Features Included:
+          - **Official Xer0byte Logo** launcher icon and top header branding
+          - **Prominent Green Dots (`🟢`)** showing active peer-to-peer connection
+          - **Multi-Peer Simultaneous Mesh**: Connect and talk to multiple phones at the same time
+          - **WhatsApp User Interface**: 4 Tabs (Chats, Updates/Stories, Communities, Calls)
+          - **Offline Media & Calling**: Voice notes with audio waveforms, photos, live locations, documents, and Bluetooth call screen
+          EOF
+
+      - name: Publish Automated GitHub Release (Steps 2 to 5 Automated)
         id: create_release
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "Automating Step 2, Step 3, Step 4, and Step 5..."
+          if gh release view v1.0.0 >/dev/null 2>&1; then
+            echo "Release v1.0.0 already exists, uploading/updating binaries..."
+            gh release upload v1.0.0 output_release/* --clobber
+            gh release edit v1.0.0 --notes-file release_body.md --latest
+          else
+            echo "Creating new release v1.0.0 and publishing..."
+            gh release create v1.0.0 output_release/* \
+              --title "🚀 Xer0byte v1.0.0 — Official Offline Bluetooth Messenger (Founder: Ghaznain Ahmad)" \
+              --notes-file release_body.md \
+              --latest
+          fi
+
+      - name: Fallback Release Publisher
+        if: steps.create_release.outcome != 'success'
         uses: softprops/action-gh-release@v2
         continue-on-error: true
         with:
@@ -67,31 +116,7 @@ jobs:
           draft: false
           prerelease: false
           make_latest: "true"
-          body: |
-            # 🚀 Xer0byte — Offline Bluetooth Messenger (v1.0.0)
-            **Organization:** Xer0byte  
-            **Founder & Owner:** Ghaznain Ahmad  
-            **Architecture:** 100% Offline Bluetooth RFCOMM Mesh (Zero Internet / SIM)
-
-            ---
-            ## ⬇️ Direct Download Links:
-
-            ### 📱 For Android Users:
-            - **[👉 CLICK HERE TO DOWNLOAD Xer0byte.apk](https://github.com/${{ github.repository }}/releases/download/v1.0.0/Xer0byte.apk)**
-            - **[👉 ALTERNATE LINK (Xer0byte-Android.apk)](https://github.com/${{ github.repository }}/releases/download/v1.0.0/Xer0byte-Android.apk)**
-            - Or download directly from repository root: `Xer0byte.apk`
-
-            ### 🍏 For iOS (iPhone & iPad) Users:
-            - **[👉 CLICK HERE FOR iOS INSTALLATION GUIDE](https://github.com/${{ github.repository }}/releases/download/v1.0.0/Xer0byte-iOS-Guide.txt)**
-            - **[🌐 Instant Safari Live Web App](https://ais-pre-rwnp7qqnlqk43a6wrusrox-868695915078.asia-southeast1.run.app)** (Add to Home Screen)
-
-            ---
-            ### ✨ Features Included:
-            - **Official Xer0byte Logo** launcher icon and top header branding
-            - **Prominent Green Dots (`🟢`)** showing active peer-to-peer connection
-            - **Multi-Peer Simultaneous Mesh**: Connect and talk to multiple phones at the same time
-            - **WhatsApp User Interface**: 4 Tabs (Chats, Updates/Stories, Communities, Calls)
-            - **Offline Media & Calling**: Voice notes with audio waveforms, photos, live locations, documents, and Bluetooth call screen
+          body_path: release_body.md
           files: |
             output_release/Xer0byte.apk
             output_release/Xer0byte-Android.apk
