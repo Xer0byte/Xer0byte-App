@@ -5,7 +5,7 @@
 <div align="center">
 
 [![Direct APK Download](https://img.shields.io/badge/⬇️_Direct_Download-Xer0byte.apk_(Ready_Now)-00A884?style=for-the-badge&logo=android&logoColor=white)](./Xer0byte.apk?raw=true)
-[![Direct File in Repo](https://img.shields.io/badge/📦_Repo_File-Xer0byte.apk-25D366?style=for-the-badge&logo=googleplay&logoColor=white)](./Xer0byte.apk)
+[![Windows PC Guide](https://img.shields.io/badge/💻_Windows_PC-Setup_Guide_(Win_11_&_10)-0078D6?style=for-the-badge&logo=windows&logoColor=white)](WINDOWS_INSTALLATION_GUIDE.md)
 [![iOS iPhone Guide](https://img.shields.io/badge/🍏_iOS-iPhone_Install_Guide-000000?style=for-the-badge&logo=apple&logoColor=white)](iOS_INSTALLATION_GUIDE.md)
 [![Live Web App](https://img.shields.io/badge/🌐_Live_Web-Test_in_Browser-007ACC?style=for-the-badge&logo=googlechrome&logoColor=white)](https://ais-pre-rwnp7qqnlqk43a6wrusrox-868695915078.asia-southeast1.run.app)
 [![Status](https://img.shields.io/badge/Network-100%25_Offline_Bluetooth-25D366?style=for-the-badge&logo=bluetooth&logoColor=white)](./)
@@ -69,6 +69,7 @@ README me pehle se dono direct methods active hain:
 | Platform | Format | Direct Download Link | How to Install |
 | :--- | :--- | :--- | :--- |
 | **Android (Direct Raw)** | `.apk` (23 MB) | **[⬇️ CLICK TO DOWNLOAD Xer0byte.apk (Direct)](./Xer0byte.apk?raw=true)** | 1. Tap link to download directly<br/>2. Open the downloaded file<br/>3. Tap **Install** |
+| **Windows PC (11, 10, 8, 7)** | WSA / BlueStacks / PWA | **[💻 View Windows Installation Guide](WINDOWS_INSTALLATION_GUIDE.md)** | Run natively via WSA or BlueStacks, or install via Edge/Chrome PWA! |
 | **Android (GitHub Release)** | `.apk` (23 MB) | **[🚀 Download from Latest Release](../../releases/latest/download/Xer0byte.apk)** | Auto-published by GitHub Actions workflow on each push |
 | **Android (Repository File)** | `.apk` File | **[📦 View Xer0byte.apk in Repo](./Xer0byte.apk)** | Tap file, then click the **Download** (⬇️) button on GitHub |
 | **iOS (iPhone & iPad)** | Safari PWA | **[🍏 Open Xer0byte on iPhone](https://ais-pre-rwnp7qqnlqk43a6wrusrox-868695915078.asia-southeast1.run.app)** | In Safari: Tap **Share** ➡️ **Add to Home Screen** |

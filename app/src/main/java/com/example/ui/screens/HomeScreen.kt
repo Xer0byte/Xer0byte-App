@@ -289,22 +289,26 @@ private fun ChatsTabContent(
                     Column(modifier = Modifier.weight(1f)) {
                         Text(
                             text = if (btState.connectionState == BluetoothConnectionState.CONNECTED) {
-                                "Connected: ${btState.connectedDeviceName ?: "Peer"}"
+                                "🟢 Connected: ${btState.connectedPeers.joinToString { it.name }.ifEmpty { btState.connectedDeviceName ?: "Peer" }}"
                             } else {
                                 "Xer0byte Offline Bluetooth Mesh"
                             },
                             fontSize = 13.sp,
                             fontWeight = FontWeight.SemiBold,
-                            color = MaterialTheme.colorScheme.onSurface
+                            color = MaterialTheme.colorScheme.onSurface,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
                         )
                         Text(
                             text = if (btState.connectionState == BluetoothConnectionState.CONNECTED) {
-                                "Direct RFCOMM offline socket active • Range ~100m"
+                                "Direct RFCOMM socket active • Zero Internet • Range ~100m"
                             } else {
-                                "Tap to scan & pair nearby devices (Zero Internet)"
+                                "Account: ${btState.myDeviceName} • Tap to pair PC & Mobile"
                             },
                             fontSize = 11.sp,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                            color = if (btState.connectionState == BluetoothConnectionState.CONNECTED) WhatsAppBadgeGreen else MaterialTheme.colorScheme.onSurfaceVariant,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
                         )
                     }
                     Text(

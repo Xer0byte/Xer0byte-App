@@ -25,7 +25,9 @@ data class BluetoothUiState(
     val connectedPeers: List<BluetoothPeerDevice> = emptyList(),
     val pairedDevices: List<BluetoothPeerDevice> = emptyList(),
     val scannedDevices: List<BluetoothPeerDevice> = emptyList(),
-    val statusMessage: String = "Xer0byte Bluetooth Offline Engine Ready"
+    val statusMessage: String = "Xer0byte Bluetooth Offline Engine Ready",
+    val myDeviceName: String = "Xer0byte Device",
+    val lastConnectionEvent: String? = null
 ) {
     val totalConnected: Int get() = connectedPeers.size
     val isAnyConnected: Boolean get() = connectedPeers.isNotEmpty() || connectionState == BluetoothConnectionState.CONNECTED

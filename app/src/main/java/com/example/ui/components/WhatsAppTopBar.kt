@@ -41,6 +41,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.data.bluetooth.BluetoothConnectionState
@@ -55,107 +58,112 @@ fun WhatsAppTopBar(
     modifier: Modifier = Modifier
 ) {
     var menuExpanded by remember { mutableStateOf(false) }
-    val uiState = viewModel.uiState.value
-    val btState = viewModel.bluetoothUiState.value
+    val uiState by viewModel.uiState.collectAsState()
+    val btState by viewModel.bluetoothUiState.collectAsState()
 
-    if (uiState.isSearching) {
-        // WhatsApp Search bar
-        Row(
-            modifier = modifier
-                .fillMaxWidth()
-                .background(MaterialTheme.colorScheme.surface)
-                .padding(horizontal = 8.dp, vertical = 6.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            IconButton(
-                onClick = { viewModel.toggleSearch() },
-                modifier = Modifier.testTag("search_close_button")
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .background(MaterialTheme.colorScheme.surface)
+            .statusBarsPadding()
+    ) {
+        if (uiState.isSearching) {
+            // WhatsApp Search bar
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 8.dp, vertical = 6.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Icon(
-                    imageVector = Icons.Default.Close,
-                    contentDescription = "Close Search",
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                IconButton(
+                    onClick = { viewModel.toggleSearch() },
+                    modifier = Modifier.testTag("search_close_button")
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Close,
+                        contentDescription = "Close Search",
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+                TextField(
+                    value = uiState.searchQuery,
+                    onValueChange = { viewModel.updateSearchQuery(it) },
+                    placeholder = { Text("Search chats, messages…", color = MaterialTheme.colorScheme.onSurfaceVariant) },
+                    colors = TextFieldDefaults.colors(
+                        focusedContainerColor = Color.Transparent,
+                        unfocusedContainerColor = Color.Transparent,
+                        disabledContainerColor = Color.Transparent,
+                        focusedIndicatorColor = Color.Transparent,
+                        unfocusedIndicatorColor = Color.Transparent
+                    ),
+                    modifier = Modifier
+                        .weight(1f)
+                        .testTag("search_input_field"),
+                    singleLine = true
                 )
             }
-            TextField(
-                value = uiState.searchQuery,
-                onValueChange = { viewModel.updateSearchQuery(it) },
-                placeholder = { Text("Search chats, messages…", color = MaterialTheme.colorScheme.onSurfaceVariant) },
-                colors = TextFieldDefaults.colors(
-                    focusedContainerColor = Color.Transparent,
-                    unfocusedContainerColor = Color.Transparent,
-                    disabledContainerColor = Color.Transparent,
-                    focusedIndicatorColor = Color.Transparent,
-                    unfocusedIndicatorColor = Color.Transparent
-                ),
+        } else {
+            Row(
                 modifier = Modifier
-                    .weight(1f)
-                    .testTag("search_input_field"),
-                singleLine = true
-            )
-        }
-    } else {
-        Row(
-            modifier = modifier
-                .fillMaxWidth()
-                .background(MaterialTheme.colorScheme.surface)
-                .padding(horizontal = 16.dp, vertical = 12.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Column(modifier = Modifier.weight(1f)) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Image(
-                        painter = painterResource(id = R.drawable.xer0byte_logo_square),
-                        contentDescription = "Xer0byte Logo",
-                        modifier = Modifier
-                            .size(30.dp)
-                            .clip(CircleShape)
-                            .background(Color.Black)
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        text = "Xer0byte",
-                        fontSize = 22.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.testTag("app_brand_title")
-                    )
-                    Spacer(modifier = Modifier.width(6.dp))
-                    Box(
-                        modifier = Modifier
-                            .background(Color(0xFF005C4B).copy(alpha = 0.35f), shape = CircleShape)
-                            .padding(horizontal = 7.dp, vertical = 2.dp)
-                    ) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(
-                                imageVector = Icons.Default.Lock,
-                                contentDescription = "Lock",
-                                tint = WhatsAppBadgeGreen,
-                                modifier = Modifier.size(10.dp)
-                            )
-                            Spacer(modifier = Modifier.width(3.dp))
-                            Text(
-                                text = "Bluetooth P2P",
-                                fontSize = 10.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = WhatsAppBadgeGreen
-                            )
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 10.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column(modifier = Modifier.weight(1f)) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Image(
+                            painter = painterResource(id = R.drawable.xer0byte_logo_square),
+                            contentDescription = "Xer0byte Logo",
+                            modifier = Modifier
+                                .size(28.dp)
+                                .clip(CircleShape)
+                                .background(Color.Black)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = "Xer0byte",
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.testTag("app_brand_title")
+                        )
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Box(
+                            modifier = Modifier
+                                .background(Color(0xFF005C4B).copy(alpha = 0.35f), shape = CircleShape)
+                                .padding(horizontal = 7.dp, vertical = 2.dp)
+                        ) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Icon(
+                                    imageVector = Icons.Default.Lock,
+                                    contentDescription = "Lock",
+                                    tint = WhatsAppBadgeGreen,
+                                    modifier = Modifier.size(10.dp)
+                                )
+                                Spacer(modifier = Modifier.width(3.dp))
+                                Text(
+                                    text = "Bluetooth P2P",
+                                    fontSize = 10.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = WhatsAppBadgeGreen
+                                )
+                            }
                         }
                     }
+                    Text(
+                        text = when {
+                            btState.totalConnected > 0 -> "🟢 ${btState.totalConnected} Connected: ${btState.connectedPeers.joinToString { it.name }} (Zero Internet)"
+                            btState.connectionState == BluetoothConnectionState.CONNECTED -> "🟢 Connected to ${btState.connectedDeviceName ?: "Peer"} (Zero Internet)"
+                            btState.connectionState == BluetoothConnectionState.CONNECTING -> "🟡 Linking Bluetooth RFCOMM…"
+                            btState.connectionState == BluetoothConnectionState.LISTENING -> "🔵 Account: ${btState.myDeviceName} (Ready)"
+                            else -> "⚪ Account: ${btState.myDeviceName} • 100% Offline"
+                        },
+                        fontSize = 11.sp,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
                 }
-                Text(
-                    text = when {
-                        btState.totalConnected > 0 -> "🟢 ${btState.totalConnected} Connected Peer(s): ${btState.connectedPeers.joinToString { it.name }} (Zero Internet)"
-                        btState.connectionState == BluetoothConnectionState.CONNECTED -> "🟢 Connected to ${btState.connectedDeviceName ?: "Peer"} (Zero Internet)"
-                        btState.connectionState == BluetoothConnectionState.CONNECTING -> "🟡 Linking Bluetooth RFCOMM…"
-                        btState.connectionState == BluetoothConnectionState.LISTENING -> "🔵 Ready for peers • Ghaznain Ahmad"
-                        else -> "⚪ 100% Offline • Bluetooth Only"
-                    },
-                    fontSize = 11.sp,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    maxLines = 1
-                )
-            }
 
             // Quick Bluetooth icon button
             IconButton(
@@ -259,4 +267,5 @@ fun WhatsAppTopBar(
             }
         }
     }
+}
 }

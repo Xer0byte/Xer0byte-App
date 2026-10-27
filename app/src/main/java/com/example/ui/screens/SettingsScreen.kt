@@ -40,7 +40,9 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -64,6 +66,7 @@ fun SettingsScreen(
     modifier: Modifier = Modifier
 ) {
     var showAboutDialog by remember { mutableStateOf(false) }
+    val btState by viewModel.bluetoothUiState.collectAsState()
 
     BackHandler {
         viewModel.navigateBack()
@@ -76,6 +79,7 @@ fun SettingsScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(MaterialTheme.colorScheme.surface)
+                    .statusBarsPadding()
                     .padding(horizontal = 6.dp, vertical = 8.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -141,19 +145,20 @@ fun SettingsScreen(
 
                         Column(modifier = Modifier.weight(1f)) {
                             Text(
-                                text = "Ghaznain Ahmad",
+                                text = btState.myDeviceName,
                                 fontSize = 18.sp,
                                 fontWeight = FontWeight.Bold,
                                 color = MaterialTheme.colorScheme.onSurface
                             )
                             Text(
-                                text = "Founder & Owner @ Xer0byte",
+                                text = "Bluetooth Account (Device ID)",
                                 fontSize = 13.sp,
-                                color = MaterialTheme.colorScheme.primary
+                                fontWeight = FontWeight.SemiBold,
+                                color = WhatsAppBadgeGreen
                             )
                             Text(
-                                text = "Available on Xer0byte Bluetooth Mesh",
-                                fontSize = 12.sp,
+                                text = "Organization: Xer0byte • Founder: Ghaznain Ahmad",
+                                fontSize = 11.sp,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }

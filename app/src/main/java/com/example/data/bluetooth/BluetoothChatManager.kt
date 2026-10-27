@@ -57,10 +57,20 @@ class BluetoothChatManager(private val context: Context) {
         context.getSystemService(Context.BLUETOOTH_SERVICE) as? BluetoothManager
     val bluetoothAdapter: BluetoothAdapter? = bluetoothManager?.adapter
 
+    fun getMyDeviceName(): String {
+        return try {
+            val name = bluetoothAdapter?.name
+            if (!name.isNullOrBlank()) name else (Build.MODEL ?: "Xer0byte Device")
+        } catch (e: SecurityException) {
+            Build.MODEL ?: "Xer0byte Device"
+        }
+    }
+
     private val _uiState = MutableStateFlow(
         BluetoothUiState(
             isSupported = bluetoothAdapter != null,
-            isEnabled = bluetoothAdapter?.isEnabled == true
+            isEnabled = bluetoothAdapter?.isEnabled == true,
+            myDeviceName = getMyDeviceName()
         )
     )
     val uiState: StateFlow<BluetoothUiState> = _uiState.asStateFlow()
@@ -228,11 +238,15 @@ class BluetoothChatManager(private val context: Context) {
         serverJob?.cancel()
         serverJob = scope.launch {
             try {
-                // Try standard secure RFCOMM first, fallback to insecure RFCOMM
+                // Try listening on insecure RFCOMM (Windows PC friendly) and standard RFCOMM
                 serverSocket = try {
-                    adapter.listenUsingRfcommWithServiceRecord(serviceName, appUuid)
-                } catch (e: Exception) {
                     adapter.listenUsingInsecureRfcommWithServiceRecord(serviceName, appUuid)
+                } catch (e: Exception) {
+                    try {
+                        adapter.listenUsingRfcommWithServiceRecord(serviceName, appUuid)
+                    } catch (e2: Exception) {
+                        null
+                    }
                 }
 
                 _uiState.update {
@@ -243,7 +257,7 @@ class BluetoothChatManager(private val context: Context) {
                 }
 
                 // Continuous server listening loop to accept multiple incoming connections!
-                while (isActive) {
+                while (isActive && serverSocket != null) {
                     val socket = try {
                         serverSocket?.accept()
                     } catch (e: Exception) {
@@ -275,41 +289,108 @@ class BluetoothChatManager(private val context: Context) {
                     statusMessage = "Connecting to $deviceName over Bluetooth…"
                 )
             }
+            // Allow Bluetooth chip hardware to settle after discovery
+            kotlinx.coroutines.delay(200)
+
             try {
                 val device = adapter.getRemoteDevice(address)
                 var socket: BluetoothSocket? = null
+                var lastException: Exception? = null
 
-                // Dual RFCOMM strategy
+                // Strategy 1: Insecure RFCOMM with Service Record (Top choice for Windows PC & Android)
                 try {
-                    socket = device.createRfcommSocketToServiceRecord(appUuid)
-                    socket.connect()
+                    val s = device.createInsecureRfcommSocketToServiceRecord(appUuid)
+                    s.connect()
+                    socket = s
                 } catch (e: Exception) {
-                    Log.w(tag, "Standard RFCOMM failed, attempting reflection channel 1 fallback...", e)
+                    lastException = e
+                    Log.w(tag, "Strategy 1 (Insecure RFCOMM) failed for $address: ${e.message}")
+                }
+
+                // Strategy 2: Standard Secure RFCOMM
+                if (socket == null || !socket.isConnected) {
+                    try {
+                        val s = device.createRfcommSocketToServiceRecord(appUuid)
+                        s.connect()
+                        socket = s
+                    } catch (e: Exception) {
+                        lastException = e
+                        Log.w(tag, "Strategy 2 (Secure RFCOMM) failed for $address: ${e.message}")
+                    }
+                }
+
+                // Strategy 3: Insecure Reflection Channel 1 (Standard Windows COM port)
+                if (socket == null || !socket.isConnected) {
+                    try {
+                        val m = device.javaClass.getMethod("createInsecureRfcommSocket", Int::class.javaPrimitiveType)
+                        val s = m.invoke(device, 1) as BluetoothSocket
+                        s.connect()
+                        socket = s
+                    } catch (e: Exception) {
+                        lastException = e
+                        Log.w(tag, "Strategy 3 (Insecure Channel 1) failed: ${e.message}")
+                    }
+                }
+
+                // Strategy 4: Standard Reflection Channel 1
+                if (socket == null || !socket.isConnected) {
                     try {
                         val m = device.javaClass.getMethod("createRfcommSocket", Int::class.javaPrimitiveType)
-                        val fallbackSocket = m.invoke(device, 1) as BluetoothSocket
-                        fallbackSocket.connect()
-                        socket = fallbackSocket
-                    } catch (fallbackEx: Exception) {
-                        Log.e(tag, "Fallback reflection socket also failed", fallbackEx)
-                        throw fallbackEx
+                        val s = m.invoke(device, 1) as BluetoothSocket
+                        s.connect()
+                        socket = s
+                    } catch (e: Exception) {
+                        lastException = e
+                        Log.w(tag, "Strategy 4 (Channel 1) failed: ${e.message}")
+                    }
+                }
+
+                // Strategy 5: Insecure Reflection Channel 2
+                if (socket == null || !socket.isConnected) {
+                    try {
+                        val m = device.javaClass.getMethod("createInsecureRfcommSocket", Int::class.javaPrimitiveType)
+                        val s = m.invoke(device, 2) as BluetoothSocket
+                        s.connect()
+                        socket = s
+                    } catch (e: Exception) {
+                        lastException = e
                     }
                 }
 
                 if (socket != null && socket.isConnected) {
                     addPeerSession(socket, deviceName, address)
                 } else {
-                    throw IllegalStateException("Socket not connected")
+                    throw (lastException ?: IllegalStateException("Could not establish Bluetooth socket connection"))
                 }
             } catch (e: Exception) {
                 Log.e(tag, "Failed to connect to device $address", e)
                 _uiState.update {
                     it.copy(
                         connectionState = if (activeSessions.isNotEmpty()) BluetoothConnectionState.CONNECTED else BluetoothConnectionState.DISCONNECTED,
-                        statusMessage = "Connection to $deviceName failed. Ensure device is nearby & discoverable."
+                        statusMessage = "Connection to $deviceName failed. Ensure device is paired & Bluetooth is ON on PC/Phone."
                     )
                 }
             }
+        }
+    }
+
+    private fun triggerHapticFeedback() {
+        try {
+            val vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                val vm = context.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as? android.os.VibratorManager
+                vm?.defaultVibrator
+            } else {
+                @Suppress("DEPRECATION")
+                context.getSystemService(Context.VIBRATOR_SERVICE) as? android.os.Vibrator
+            }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                vibrator?.vibrate(android.os.VibrationEffect.createOneShot(120, android.os.VibrationEffect.DEFAULT_AMPLITUDE))
+            } else {
+                @Suppress("DEPRECATION")
+                vibrator?.vibrate(120)
+            }
+        } catch (e: Exception) {
+            // Ignore if vibration unsupported
         }
     }
 
@@ -343,7 +424,8 @@ class BluetoothChatManager(private val context: Context) {
 
         val session = PeerSession(address, deviceName, socket, writer, readerJob)
         activeSessions[address] = session
-        updateConnectedPeersState()
+        triggerHapticFeedback()
+        updateConnectedPeersState(justConnectedName = deviceName)
     }
 
     private fun handleInboundLine(line: String, deviceName: String, address: String) {
@@ -406,7 +488,7 @@ class BluetoothChatManager(private val context: Context) {
         updateConnectedPeersState()
     }
 
-    private fun updateConnectedPeersState() {
+    private fun updateConnectedPeersState(justConnectedName: String? = null) {
         val sessionPeers = activeSessions.values.map {
             BluetoothPeerDevice(
                 name = it.name,
@@ -425,6 +507,7 @@ class BluetoothChatManager(private val context: Context) {
                 connectedDeviceName = peersList.firstOrNull()?.name,
                 connectedDeviceAddress = peersList.firstOrNull()?.address,
                 connectedPeers = peersList,
+                lastConnectionEvent = if (justConnectedName != null) "🟢 Connected to $justConnectedName! (Bluetooth Active)" else state.lastConnectionEvent,
                 statusMessage = if (isConn) {
                     "Connected to ${peersList.size} peer(s): ${peersList.joinToString { it.name }} (Zero Internet)"
                 } else {
@@ -441,7 +524,8 @@ class BluetoothChatManager(private val context: Context) {
             isBonded = true,
             isConnected = true
         )
-        updateConnectedPeersState()
+        triggerHapticFeedback()
+        updateConnectedPeersState(justConnectedName = name)
 
         // Send initial greeting packet
         scope.launch {
@@ -460,10 +544,12 @@ class BluetoothChatManager(private val context: Context) {
 
     suspend fun sendPacket(packet: BluetoothPacket, targetAddress: String? = null): Boolean = withContext(Dispatchers.IO) {
         seenPacketIds.add(packet.id)
+        val myName = _uiState.value.myDeviceName
+        val effectiveSender = if (packet.senderName.isNotBlank() && packet.senderName != "Me") packet.senderName else myName
         val json = JSONObject().apply {
             put("id", packet.id)
             put("type", packet.type)
-            put("senderName", packet.senderName)
+            put("senderName", effectiveSender)
             put("text", packet.text)
             put("timestamp", packet.timestamp)
             put("extra", packet.extra ?: "")
