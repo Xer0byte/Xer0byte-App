@@ -139,6 +139,10 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
         _uiState.update { it.copy(currentScreen = screen) }
     }
 
+    fun deselectChat() {
+        _uiState.update { it.copy(selectedChat = null) }
+    }
+
     fun toggleSearch() {
         _uiState.update { it.copy(isSearching = !it.isSearching, searchQuery = "") }
     }

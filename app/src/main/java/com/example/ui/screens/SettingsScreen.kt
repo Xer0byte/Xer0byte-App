@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
@@ -420,8 +421,9 @@ private fun SettingsItem(
     Row(
         modifier = Modifier
             .fillMaxWidth()
+            .sizeIn(minHeight = 56.dp)
             .clickable(onClick = onClick)
-            .padding(horizontal = 20.dp, vertical = 12.dp)
+            .padding(horizontal = 20.dp, vertical = 10.dp)
             .testTag("settings_${title.lowercase().replace(" ", "_")}"),
         verticalAlignment = Alignment.CenterVertically
     ) {

@@ -37,6 +37,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -92,6 +94,14 @@ fun MessageBubble(
         SimpleDateFormat("hh:mm a", Locale.getDefault()).format(Date(message.timestamp))
     }
 
+    val statusText = when (message.status) {
+        MessageStatus.SENDING -> "Sending"
+        MessageStatus.SENT -> "Sent"
+        MessageStatus.DELIVERED -> "Delivered"
+        MessageStatus.READ -> "Read"
+    }
+    val accessibleDescription = "${if (isMe) "Outgoing message" else "Incoming message from ${message.senderName}"}: ${message.text}. At $timeString. Status: $statusText."
+
     Box(
         modifier = modifier
             .fillMaxWidth()
@@ -100,7 +110,7 @@ fun MessageBubble(
     ) {
         Column(
             modifier = Modifier
-                .widthIn(min = 80.dp, max = 300.dp)
+                .widthIn(min = 96.dp, max = 500.dp)
                 .liquidGlass(
                     shape = bubbleShape,
                     surfaceBrush = bubbleSurfaceBrush,
@@ -109,6 +119,9 @@ fun MessageBubble(
                     hasTopSpecularHighlight = true
                 )
                 .padding(horizontal = 10.dp, vertical = 7.dp)
+                .semantics(mergeDescendants = true) {
+                    contentDescription = accessibleDescription
+                }
                 .testTag("message_bubble_${message.id}")
         ) {
             // Sender name in group chats if not from me
@@ -214,15 +227,18 @@ private fun VoiceMessageBubbleContent(duration: String, isMe: Boolean) {
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        IconButton(
-            onClick = { isPlaying = !isPlaying },
+        Box(
             modifier = Modifier
-                .size(36.dp)
-                .background(MaterialTheme.colorScheme.primary, shape = CircleShape)
+                .size(48.dp)
+                .clip(CircleShape)
+                .clickable { isPlaying = !isPlaying }
+                .padding(6.dp)
+                .background(MaterialTheme.colorScheme.primary, shape = CircleShape),
+            contentAlignment = Alignment.Center
         ) {
             Icon(
                 imageVector = if (isPlaying) Icons.Default.Pause else Icons.Default.PlayArrow,
-                contentDescription = if (isPlaying) "Pause" else "Play Voice Note",
+                contentDescription = if (isPlaying) "Pause Voice Note" else "Play Voice Note, Duration $duration",
                 tint = Color.Black,
                 modifier = Modifier.size(20.dp)
             )

@@ -37,6 +37,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
+import androidx.compose.foundation.layout.sizeIn
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.selected
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -67,6 +73,7 @@ fun WhatsAppBottomNav(
     ) {
         Row(
             modifier = Modifier
+                .widthIn(max = 500.dp)
                 .fillMaxWidth()
                 .liquidGlass(
                     shape = RoundedCornerShape(28.dp),
@@ -147,7 +154,12 @@ private fun NavItem(
                 indication = ripple(color = WhatsAppBadgeGreen),
                 onClick = onClick
             )
-            .padding(horizontal = 8.dp, vertical = 4.dp)
+            .semantics {
+                role = Role.Tab
+                this.selected = selected
+            }
+            .sizeIn(minWidth = 56.dp, minHeight = 48.dp)
+            .padding(horizontal = 6.dp, vertical = 4.dp)
             .testTag(testTag),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center

@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -81,6 +82,8 @@ fun StatusViewerScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .widthIn(max = 680.dp)
+                .align(Alignment.Center)
                 .statusBarsPadding()
                 .navigationBarsPadding()
         ) {

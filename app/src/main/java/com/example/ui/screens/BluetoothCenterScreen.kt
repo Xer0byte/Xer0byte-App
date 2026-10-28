@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
@@ -481,12 +482,13 @@ private fun DeviceRow(
                 ) {
                     Text("Connected 🟢", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = WhatsAppBadgeGreen)
                 }
-            } else {
                 OutlinedButton(
                     onClick = onConnect,
-                    modifier = Modifier.height(34.dp).testTag("connect_${device.address}")
+                    modifier = Modifier
+                        .sizeIn(minHeight = 48.dp)
+                        .testTag("connect_${device.address}")
                 ) {
-                    Text("Connect", fontSize = 11.sp)
+                    Text("Connect", fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
                 }
             }
         }

@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -87,6 +88,12 @@ import java.util.Locale
 @Composable
 fun HomeScreen(
     viewModel: ChatViewModel,
+    adaptiveInfo: com.example.ui.theme.WindowAdaptiveInfo = com.example.ui.theme.WindowAdaptiveInfo(
+        widthClass = com.example.ui.theme.WindowWidthClass.COMPACT,
+        heightClass = com.example.ui.theme.WindowHeightClass.MEDIUM,
+        windowWidth = 360.dp,
+        windowHeight = 800.dp
+    ),
     modifier: Modifier = Modifier
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -106,11 +113,14 @@ fun HomeScreen(
             )
         },
         bottomBar = {
-            WhatsAppBottomNav(
-                activeTab = uiState.activeTab,
-                unreadChatsCount = unreadCount,
-                onTabSelected = { viewModel.selectTab(it) }
-            )
+            // Hide bottom nav when Navigation Rail is active on tablets / wide windows
+            if (!adaptiveInfo.useNavRail) {
+                WhatsAppBottomNav(
+                    activeTab = uiState.activeTab,
+                    unreadChatsCount = unreadCount,
+                    onTabSelected = { viewModel.selectTab(it) }
+                )
+            }
         },
         floatingActionButton = {
             when (uiState.activeTab) {
@@ -164,14 +174,15 @@ fun HomeScreen(
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .widthIn(max = 680.dp)
-                    .align(Alignment.TopCenter)
-            ) {
-                when (uiState.activeTab) {
-                    HomeTab.CHATS -> {
+            if (adaptiveInfo.isTwoPaneChat && uiState.activeTab == HomeTab.CHATS) {
+                // Two-Pane Canonical Layout for Tablets & Foldables
+                Row(modifier = Modifier.fillMaxSize()) {
+                    // Left Pane: Conversation List
+                    Box(
+                        modifier = Modifier
+                            .width(360.dp)
+                            .fillMaxHeight()
+                    ) {
                         ChatsTabContent(
                             conversations = conversations,
                             searchQuery = uiState.searchQuery,
@@ -180,31 +191,184 @@ fun HomeScreen(
                             onBluetoothBannerClicked = { viewModel.navigateTo(AppScreen.BLUETOOTH_CENTER) }
                         )
                     }
-                    HomeTab.UPDATES -> {
-                        UpdatesTabContent(
-                            statuses = statuses,
-                            onStatusClicked = { viewModel.openStatus(it) },
-                            onAddStatus = { viewModel.postStatus("Available on Xer0byte Bluetooth") }
-                        )
+
+                    // Divider: Subtle specular vertical border
+                    Box(
+                        modifier = Modifier
+                            .width(1.dp)
+                            .fillMaxHeight()
+                            .background(
+                                Brush.verticalGradient(
+                                    listOf(
+                                        Color.Transparent,
+                                        Color.White.copy(alpha = 0.18f),
+                                        WhatsAppBadgeGreen.copy(alpha = 0.35f),
+                                        Color.Transparent
+                                    )
+                                )
+                            )
+                    )
+
+                    // Right Pane: Active Selected Chat or Empty State
+                    Box(
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxHeight()
+                    ) {
+                        val selectedChat = uiState.selectedChat
+                        if (selectedChat != null) {
+                            ChatDetailContent(
+                                viewModel = viewModel,
+                                chat = selectedChat,
+                                isTwoPane = true,
+                                onCloseChat = { viewModel.deselectChat() }
+                            )
+                        } else {
+                            TwoPaneEmptyChatDetail(
+                                onOpenBluetooth = { viewModel.navigateTo(AppScreen.BLUETOOTH_CENTER) }
+                            )
+                        }
                     }
-                    HomeTab.COMMUNITIES -> {
-                        CommunitiesTabContent(
-                            onOpenCommunity = {
-                                val firstChat = conversations.firstOrNull()
-                                if (firstChat != null) {
-                                    viewModel.openChat(firstChat)
-                                } else {
-                                    viewModel.navigateTo(AppScreen.BLUETOOTH_CENTER)
+                }
+            } else {
+                // Single Pane Layout (Phones, or other tabs on tablet)
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .widthIn(max = if (adaptiveInfo.isExpanded) 760.dp else 680.dp)
+                        .align(Alignment.TopCenter)
+                ) {
+                    when (uiState.activeTab) {
+                        HomeTab.CHATS -> {
+                            ChatsTabContent(
+                                conversations = conversations,
+                                searchQuery = uiState.searchQuery,
+                                btState = btState,
+                                onChatClicked = { viewModel.openChat(it) },
+                                onBluetoothBannerClicked = { viewModel.navigateTo(AppScreen.BLUETOOTH_CENTER) }
+                            )
+                        }
+                        HomeTab.UPDATES -> {
+                            UpdatesTabContent(
+                                statuses = statuses,
+                                onStatusClicked = { viewModel.openStatus(it) },
+                                onAddStatus = { viewModel.postStatus("Available on Xer0byte Bluetooth") }
+                            )
+                        }
+                        HomeTab.COMMUNITIES -> {
+                            CommunitiesTabContent(
+                                onOpenCommunity = {
+                                    val firstChat = conversations.firstOrNull()
+                                    if (firstChat != null) {
+                                        viewModel.openChat(firstChat)
+                                    } else {
+                                        viewModel.navigateTo(AppScreen.BLUETOOTH_CENTER)
+                                    }
                                 }
-                            }
-                        )
+                            )
+                        }
+                        HomeTab.CALLS -> {
+                            CallsTabContent(
+                                callLogs = callLogs,
+                                onStartCall = { peer, isVideo -> viewModel.startCall(peer, isVideo) }
+                            )
+                        }
                     }
-                    HomeTab.CALLS -> {
-                        CallsTabContent(
-                            callLogs = callLogs,
-                            onStartCall = { peer, isVideo -> viewModel.startCall(peer, isVideo) }
-                        )
-                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun TwoPaneEmptyChatDetail(
+    onOpenBluetooth: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Box(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(24.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        LiquidGlassCard(
+            modifier = Modifier
+                .widthIn(max = 480.dp)
+                .fillMaxWidth(),
+            shape = RoundedCornerShape(24.dp),
+            surfaceBrush = GlassLiquidSurfaceDark,
+            borderBrush = GlassSpecularWhiteBorder,
+            borderWidth = 1.dp
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(32.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Box(
+                    modifier = Modifier
+                        .size(80.dp)
+                        .liquidGlass(
+                            shape = CircleShape,
+                            surfaceBrush = Brush.radialGradient(
+                                listOf(
+                                    WhatsAppBadgeGreen.copy(alpha = 0.35f),
+                                    Color(0xFF005C4B).copy(alpha = 0.15f),
+                                    Color.Transparent
+                                )
+                            ),
+                            borderBrush = GlassEmeraldGlowBorder,
+                            borderWidth = 1.2.dp
+                        ),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Chat,
+                        contentDescription = "Chat",
+                        tint = WhatsAppBadgeGreen,
+                        modifier = Modifier.size(40.dp)
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(20.dp))
+
+                Text(
+                    text = "Xer0byte Mesh Chat",
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Text(
+                    text = "Direct Bluetooth RFCOMM Sockets • Zero Internet • Zero SIM",
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = WhatsAppBadgeGreen
+                )
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                Text(
+                    text = "Select a conversation from the list on the left to read and send messages, or open the Bluetooth Center to discover and pair with nearby Android devices and Windows PCs.",
+                    fontSize = 13.sp,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    textAlign = TextAlign.Center,
+                    lineHeight = 19.sp
+                )
+
+                Spacer(modifier = Modifier.height(24.dp))
+
+                Button(
+                    onClick = onOpenBluetooth,
+                    colors = ButtonDefaults.buttonColors(containerColor = WhatsAppBadgeGreen, contentColor = Color.Black),
+                    modifier = Modifier.testTag("two_pane_open_bt_btn")
+                ) {
+                    Icon(Icons.Default.Bluetooth, contentDescription = null, modifier = Modifier.size(18.dp))
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("Open Bluetooth Center", fontWeight = FontWeight.Bold)
                 }
             }
         }
