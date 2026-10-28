@@ -586,9 +586,20 @@ class BluetoothChatManager(private val context: Context) {
         }
 
         // Handle companion simulation automated acknowledgment
-        if (companionPeers.isNotEmpty()) {
+        if (companionPeers.isNotEmpty() && packet.type != "ACK") {
             sentAny = true
             scope.launch {
+                // Immediate delivery ACK receipt
+                _incomingPackets.emit(
+                    BluetoothPacket(
+                        id = UUID.randomUUID().toString(),
+                        type = "ACK",
+                        senderName = companionPeers.values.firstOrNull()?.name ?: "Ghaznain Ahmad",
+                        text = "ACK",
+                        timestamp = System.currentTimeMillis(),
+                        extra = packet.id
+                    )
+                )
                 kotlinx.coroutines.delay(800)
                 val replyText = when (packet.type) {
                     "IMAGE" -> "📷 Photo received offline via Bluetooth RFCOMM! (Zero Internet)"

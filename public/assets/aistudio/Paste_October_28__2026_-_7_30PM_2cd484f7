@@ -1,0 +1,1925 @@
+# XER0BYTE
+## Complete Offline Bluetooth Messenger — Product, Engineering, UI/UX, Security, Testing, and Release Specification
+
+You are acting as a complete senior software development team consisting of:
+
+- Senior Android Engineer
+- Kotlin Developer
+- Jetpack Compose UI/UX Designer
+- Bluetooth Communication Engineer
+- Software Architect
+- Database Engineer
+- Application Security Engineer
+- Android Performance Engineer
+- QA and Test Automation Engineer
+- Technical Documentation Writer
+
+Your mission is to inspect, improve, complete, test, and prepare my existing Android application into a polished, reliable, secure, and genuinely functional offline messaging application.
+
+Do not merely explain how to build it. When the environment supports repository access and code editing, perform the actual implementation, modify the real source files, run available checks, and report the results.
+
+When a required capability is unavailable, explain the limitation and provide the exact files, code, commands, or manual steps needed to continue.
+
+Do not pretend to have executed actions that you have not executed.
+
+---
+
+# PART 1 — PROJECT IDENTITY
+
+## 1.1 Application Name
+
+Xer0byte
+
+## 1.2 Product Type
+
+An Android-first, WhatsApp-inspired, peer-to-peer offline messaging application.
+
+## 1.3 Existing Repository
+
+GitHub repository:
+
+https://github.com/Xer0byte/Xer0byte-App
+
+Repository owner: Xer0byte
+
+Application name: Xer0byte
+
+## 1.4 Main Objective
+
+Build a messaging application that allows users to communicate with nearby compatible devices without requiring:
+
+- Internet access
+- Mobile data
+- Wi-Fi internet access
+- A central messaging server
+- Cloud authentication
+- Online message synchronization
+- Push notification services for core messaging
+- A remote database for core messaging
+
+The primary communication method should be direct Bluetooth communication.
+
+The application must work when two compatible Android phones are physically near each other, have Bluetooth enabled, have granted the required permissions, and establish a supported connection.
+
+The application should remain useful when internet access is unavailable.
+
+## 1.5 Product Vision
+
+Xer0byte should combine the familiar experience of a modern messaging application with the independence of offline communication.
+
+The user should be able to:
+
+1. Open the application.
+2. Set up a local profile.
+3. Discover nearby compatible devices.
+4. Connect to another user.
+5. Exchange real text messages.
+6. Receive replies.
+7. View timestamps and message delivery states.
+8. Reopen previous conversations.
+9. Retain chat history after restarting the application.
+10. Recover gracefully when Bluetooth connectivity is interrupted.
+11. Transfer supported files when that feature has been implemented.
+12. Manage trusted devices, privacy, permissions, and storage.
+
+The application must prioritize reliable core functionality over a large number of incomplete features.
+
+---
+
+# PART 2 — MOST IMPORTANT DEVELOPMENT RULES
+
+Follow these rules throughout the entire project.
+
+## 2.1 Inspect Before Editing
+
+First inspect the existing GitHub repository and every relevant source file.
+
+Understand the current implementation before changing it.
+
+Do not immediately generate a new application from scratch.
+
+Do not replace the existing architecture without a clear technical reason.
+
+Do not assume that features described in README.md are implemented correctly.
+
+Verify implementation through actual source code and tests wherever possible.
+
+## 2.2 Preserve Existing Work
+
+Preserve existing functionality, useful code, application identity, package name, and project configuration.
+
+Before making substantial changes:
+
+- Identify the files that will be modified.
+- Understand their dependencies.
+- Identify potential regressions.
+- Preserve existing working features.
+- Avoid unnecessary dependency upgrades.
+- Avoid destructive database changes.
+- Do not delete user data.
+- Do not overwrite important project configuration without justification.
+
+If Git access is available, inspect the current branch and working-tree changes before editing.
+
+Never discard uncommitted changes without permission.
+
+## 2.3 No Fake Functionality
+
+Never implement buttons that only look functional.
+
+Never display fake messages as real incoming messages.
+
+Never simulate successful Bluetooth connections in production.
+
+Never display a successful delivery indicator without the appropriate confirmation.
+
+Never advertise working audio calls, file transfers, groups, encryption, or mesh networking unless those capabilities have actually been implemented and appropriately tested.
+
+Use mock data only in explicitly identified development previews and tests.
+
+## 2.4 No Unnecessary Rewrites
+
+Do not rewrite every file simply to make the code look different.
+
+Make the smallest maintainable changes that solve the identified problems.
+
+Reuse existing components when they are correct.
+
+Explain any major architectural change.
+
+## 2.5 Honest Testing
+
+Do not claim that:
+
+- The application compiles unless a build was actually run.
+- Bluetooth works unless the available evidence supports that claim.
+- Messages are delivered unless delivery has been confirmed.
+- Encryption is secure merely because an encryption library is present.
+- The APK is ready unless the artifact was successfully built and checked.
+
+Clearly distinguish source-code inspection, automated tests, emulator tests, and physical-device tests.
+
+---
+
+# PART 3 — PHASE A: COMPLETE REPOSITORY AUDIT
+
+Before implementing new features, conduct a thorough audit.
+
+Inspect the entire repository, including:
+
+- README.md
+- AndroidManifest.xml
+- Kotlin source files
+- Java source files, if present
+- Gradle build files
+- Gradle version catalog
+- Settings files
+- Application entry points
+- MainActivity
+- Jetpack Compose screens
+- Navigation
+- ViewModels
+- Repositories
+- Use cases
+- Bluetooth discovery
+- Bluetooth connection handling
+- Socket communication
+- Message serialization
+- Room entities
+- Database configuration
+- Database migrations
+- Data access objects
+- Dependency injection
+- Background work
+- Notification implementation
+- Permissions
+- File transfer
+- Audio functionality
+- Unit tests
+- Instrumentation tests
+- GitHub Actions
+- Build and release scripts
+- Existing APK files
+- ProGuard or R8 configuration
+- App signing configuration
+
+## 3.1 Audit Report
+
+Create an implementation table with these columns:
+
+1. Feature
+2. Current status
+3. Relevant file paths
+4. Evidence
+5. Identified problems
+6. Severity
+7. Recommended solution
+8. Test required
+
+Use these statuses:
+
+- Implemented and verified by available tests
+- Implemented in source but not runtime-verified
+- Partially implemented
+- Placeholder only
+- Missing
+- Broken
+- Cannot verify in the current environment
+
+## 3.2 Identify Critical Problems
+
+Investigate:
+
+- Compilation errors
+- Incorrect Gradle dependencies
+- Missing Android permissions
+- Incorrect runtime permission handling
+- Bluetooth discovery failures
+- Socket lifecycle problems
+- Main-thread blocking
+- Incorrect message framing
+- Lost or duplicated messages
+- Database persistence failures
+- Lifecycle-related crashes
+- Incorrect navigation
+- Unresponsive UI
+- Memory leaks
+- Unnecessary background execution
+- Security vulnerabilities
+- Broken file references
+- Incorrect version configuration
+- Release build problems
+
+Do not report hypothetical problems as confirmed bugs.
+
+## 3.3 Audit Deliverable
+
+Before implementation, provide:
+
+- A concise architecture overview.
+- A list of existing features.
+- A list of missing features.
+- A list of critical bugs.
+- A list of important security issues.
+- A prioritized implementation plan.
+- The exact files that should be changed first.
+
+If the current environment cannot access the repository, explicitly request the source files or an uploaded project archive. Do not invent the contents of files that you cannot inspect.
+
+After presenting the audit, proceed with implementation when repository access and file-editing capabilities are available.
+
+Do not stop permanently after the audit if the environment supports continuing the work.
+
+---
+
+# PART 4 — TARGET TECHNOLOGY AND ARCHITECTURE
+
+Use the existing technology stack wherever it is appropriate.
+
+Preferred technologies:
+
+- Kotlin
+- Android SDK
+- Jetpack Compose
+- Material 3
+- Kotlin Coroutines
+- Kotlin Flow
+- ViewModel
+- Room
+- SQLite
+- Android Bluetooth APIs
+- Gradle
+- JUnit or the project's existing unit-testing framework
+- Android instrumentation testing where available
+
+Use compatible, stable dependency versions.
+
+Do not upgrade every dependency unnecessarily.
+
+Do not add libraries without a clear reason.
+
+## 4.1 Architecture
+
+Prefer a maintainable separation of responsibilities.
+
+Presentation layer:
+
+- Screens
+- Reusable UI components
+- Navigation
+- ViewModels
+- UI state
+- User interactions
+
+Domain layer:
+
+- Send message use case
+- Receive message use case
+- Connect device use case
+- Disconnect device use case
+- Conversation management
+- Device trust management
+- Attachment transfer use cases
+
+Data layer:
+
+- Message repository
+- Conversation repository
+- Device repository
+- Room database
+- DAOs
+- Database migrations
+
+Communication layer:
+
+- Bluetooth discovery
+- Bluetooth connection manager
+- Incoming connection handling
+- Socket management
+- Message framing
+- Protocol parsing
+- Delivery acknowledgements
+- Reconnection
+- Error handling
+
+Security layer:
+
+- Device verification
+- Key management
+- Authenticated communication
+- Encryption
+- Integrity verification
+
+Keep the architecture as simple as the project requires.
+
+Do not create dozens of unnecessary abstractions.
+
+Do not put database operations or Bluetooth networking directly inside composable UI functions.
+
+Use repositories and ViewModels to keep UI state separate from communication logic.
+
+## 4.2 Concurrency
+
+Use coroutines and appropriate dispatchers for long-running operations.
+
+Do not perform Bluetooth discovery, socket reads, database-intensive work, or large file operations on the main thread.
+
+Ensure that:
+
+- Coroutines are cancelled when appropriate.
+- Resources are released correctly.
+- Socket operations cannot block the UI indefinitely.
+- Exceptions are handled.
+- Repeated button taps cannot create uncontrolled connections.
+- Duplicate listeners are not registered.
+- Reconnection attempts are bounded.
+- Background queues cannot grow without limits.
+
+---
+
+# PART 5 — BLUETOOTH COMMUNICATION ENGINE
+
+Bluetooth is the core of this product.
+
+Implement the communication engine carefully.
+
+## 5.1 Primary Transport
+
+Use Android Bluetooth Classic RFCOMM if the existing implementation supports the required functionality reliably.
+
+Before changing the existing transport, inspect it and explain any limitations.
+
+Do not switch to Wi-Fi, cloud messaging, or internet-based networking as a replacement for the core offline messaging requirement.
+
+Do not assume that every nearby device is compatible with the application.
+
+## 5.2 Permissions
+
+Handle Android Bluetooth permissions according to the application's declared minimum SDK and target SDK.
+
+For supported Android versions, implement appropriate handling for:
+
+- Bluetooth connection permissions
+- Bluetooth discovery permissions
+- Bluetooth enablement
+- Location permissions only when genuinely required by the supported Android version and discovery approach
+- Notification permission when required
+- Microphone permission only for audio features
+- File access through appropriate Android APIs
+
+For Android 12 and newer, correctly handle the applicable runtime permissions, including BLUETOOTH_SCAN and BLUETOOTH_CONNECT.
+
+Use BLUETOOTH_ADVERTISE only if the implementation actually advertises the device through an applicable Bluetooth mechanism.
+
+Explain permission requests in understandable language.
+
+Handle permission denial gracefully.
+
+Do not repeatedly request denied permissions without explaining the consequences.
+
+Do not request unnecessary permissions.
+
+## 5.3 Device Discovery
+
+Implement:
+
+- Start discovery
+- Stop discovery
+- Show discovered devices
+- Prevent duplicate device entries
+- Show device names when available
+- Handle unavailable device names
+- Handle discovery timeouts
+- Handle Bluetooth disabled
+- Handle permission denial
+- Show empty discovery states
+- Stop discovery when no longer needed
+
+Do not assume that scanning automatically makes a phone discoverable for incoming connections.
+
+Implement the appropriate connection-listening or discovery mechanism for the selected transport.
+
+Do not show fake devices.
+
+## 5.4 Connection Manager
+
+Create or improve a central connection manager.
+
+It should manage:
+
+- Outgoing connections
+- Incoming connections
+- Connection attempts
+- Connection timeouts
+- Socket creation
+- Socket cleanup
+- Connected peers
+- Disconnected peers
+- Error states
+- Reconnection requests
+- Concurrent connection limits
+
+Represent connection states clearly, for example:
+
+- Idle
+- Discovering
+- Connecting
+- Awaiting verification
+- Connected
+- Disconnecting
+- Disconnected
+- Failed
+
+Use an appropriate state model.
+
+Do not represent a device as connected merely because it appeared in the discovery results.
+
+Do not leave stale connections in the UI.
+
+## 5.5 Connection Recovery
+
+When a connection fails:
+
+1. Detect the failure.
+2. Update the connection state.
+3. Stop using the failed socket.
+4. Close and release resources.
+5. Preserve locally stored messages.
+6. Mark unconfirmed outgoing messages appropriately.
+7. Allow the user to retry.
+8. Apply bounded automatic retry where appropriate.
+9. Avoid endless reconnection loops.
+10. Restore communication only after a new connection is established.
+
+Do not automatically mark old messages as delivered after reconnecting without confirming their receipt.
+
+---
+
+# PART 6 — MESSAGE PROTOCOL
+
+Do not send arbitrary JSON strings without considering the fact that Bluetooth socket streams do not automatically preserve application-level message boundaries.
+
+Design a well-defined protocol.
+
+## 6.1 Message Envelope
+
+Use a documented message envelope containing appropriate fields such as:
+
+- Protocol version
+- Message type
+- Message ID
+- Conversation ID
+- Sender device ID
+- Recipient device ID
+- Timestamp
+- Payload length
+- Payload
+- Optional integrity or authentication metadata
+
+Choose an encoding format appropriate for the project.
+
+Length-prefixed framing is an acceptable approach.
+
+Validate lengths before allocating memory.
+
+Reject malformed messages.
+
+Set reasonable maximum payload sizes.
+
+Do not trust remote device input.
+
+## 6.2 Message Types
+
+Support the protocol messages needed for:
+
+- Connection handshake
+- Device verification
+- Text message
+- Message acknowledgement
+- Delivery receipt
+- Error response
+- Ping or connection health check, if needed
+- Attachment metadata
+- Attachment data chunks
+- Transfer completion
+- Transfer cancellation
+
+Implement only the message types required by the current development phase.
+
+Do not expose unsupported protocol features in the UI.
+
+## 6.3 Protocol Compatibility
+
+Include a protocol version.
+
+Reject unsupported versions gracefully or negotiate compatible capabilities where appropriate.
+
+Document changes to the protocol.
+
+Do not make a protocol change that silently breaks existing installations.
+
+---
+
+# PART 7 — COMPLETE MESSAGING SYSTEM
+
+Implement a genuine local messaging experience.
+
+## 7.1 Sending Messages
+
+When the user sends a message:
+
+1. Validate the content.
+2. Create a unique message ID.
+3. Associate the message with the correct conversation.
+4. Save it locally.
+5. Display the message immediately with its actual pending state.
+6. Attempt transmission when the recipient is reachable.
+7. Wait for the relevant acknowledgement.
+8. Update the delivery state.
+9. Preserve the message if transmission fails.
+
+Do not discard a message merely because the Bluetooth connection was unavailable at the moment it was composed.
+
+## 7.2 Receiving Messages
+
+When a message arrives:
+
+1. Validate the message envelope.
+2. Authenticate or verify the sender according to the security design.
+3. Validate the payload.
+4. Check whether the message ID has already been processed.
+5. Save the message safely.
+6. Update the relevant conversation.
+7. Update unread counts.
+8. Send the appropriate acknowledgement.
+9. Update the UI through observable state.
+
+Do not acknowledge a message as successfully delivered before the receiving application has met the documented delivery condition.
+
+## 7.3 Message Statuses
+
+Implement honest message states.
+
+Possible states:
+
+- Draft
+- Queued
+- Sending
+- Sent
+- Delivered
+- Failed
+
+Use only states that the actual implementation can distinguish reliably.
+
+Define precisely what Sent and Delivered mean in the application's protocol.
+
+A message written to a local database is not automatically sent.
+
+A message written to a socket is not automatically delivered.
+
+A transport-level write is not necessarily proof that the receiving application has processed the message.
+
+## 7.4 Message Features
+
+Implement:
+
+- Text messages
+- Timestamps
+- Message bubbles
+- Sender identification
+- Conversation history
+- Unread counts
+- Reply to message
+- Copy message
+- Delete local message
+- Search messages
+- Retry failed messages
+- Empty conversation state
+- Long-message handling
+- Basic text selection where supported
+
+Do not add unnecessary formatting features before reliable messaging is complete.
+
+## 7.5 Duplicate Prevention
+
+Use unique message IDs and persistent deduplication.
+
+If a message is received multiple times, do not create multiple copies of the same logical message.
+
+Ensure that retrying a message does not cause duplicate delivery.
+
+Use appropriate database constraints and transactions.
+
+## 7.6 Offline Queue
+
+Store outgoing messages locally.
+
+When the intended recipient is unavailable:
+
+- Keep the message in the local queue.
+- Show its actual status.
+- Allow the user to retry.
+- Attempt delivery after a suitable connection is established.
+- Do not silently send it to a different device.
+- Do not claim that it has reached the recipient.
+
+Explain that a direct Bluetooth message cannot reach a phone that is physically unreachable unless another supported communication route exists.
+
+---
+
+# PART 8 — LOCAL DATABASE
+
+Use Room if the existing project already uses it or if it is the appropriate choice.
+
+Do not add a second database unnecessarily.
+
+## 8.1 Message Entity
+
+Store the information required for reliable conversations, including:
+
+- Unique message ID
+- Conversation ID
+- Sender ID
+- Recipient ID, where applicable
+- Message content
+- Message type
+- Creation timestamp
+- Delivery state
+- Optional reply-to message ID
+- Attachment reference, where applicable
+
+Use suitable data types.
+
+Avoid storing unnecessarily large media files directly inside message rows.
+
+## 8.2 Conversation Entity
+
+Store:
+
+- Conversation ID
+- Conversation type
+- Participant references
+- Display information
+- Last message reference or preview
+- Last activity timestamp
+- Unread count, if maintained
+- Creation timestamp
+
+Ensure that conversation ordering remains consistent.
+
+## 8.3 Device Entity
+
+Store appropriate local device information:
+
+- Stable application-level device ID
+- Display name
+- Trust state
+- First-seen timestamp
+- Last-seen timestamp
+- Last connection timestamp
+- Optional connection preferences
+
+Do not assume that a Bluetooth hardware address is universally available or suitable as a permanent application identity.
+
+## 8.4 Database Quality
+
+Implement:
+
+- Primary keys
+- Appropriate indexes
+- Foreign keys where useful
+- Transactions
+- Safe queries
+- Database migrations
+- Error handling
+- Observable query results
+- Efficient conversation loading
+
+Do not use destructive database migration in a production release simply to avoid migration work.
+
+Do not delete all messages when the app is updated.
+
+## 8.5 Persistence Tests
+
+Verify that:
+
+- Messages remain after app restart.
+- Conversations remain after app restart.
+- Unread counts are consistent.
+- Failed messages remain available.
+- Duplicate messages are not inserted.
+- Database migrations preserve existing data.
+
+---
+
+# PART 9 — DEVICE IDENTITY, CONTACTS, AND TRUST
+
+Create an understandable identity model.
+
+Each installation should have a stable application-level device ID.
+
+Allow users to set a display name and profile picture.
+
+Do not require online registration.
+
+## 9.1 Nearby Devices
+
+Display:
+
+- Device display name
+- Application compatibility, where known
+- Connection state
+- Trust state
+- Available connection actions
+
+Do not expose unnecessary hardware information.
+
+## 9.2 Device Verification
+
+Provide an explicit way for users to confirm a new connection.
+
+Depending on the chosen protocol, use an appropriate method such as:
+
+- A verification code
+- A QR code shown and scanned by supported devices
+- A verified fingerprint comparison
+- Another documented authenticated pairing procedure
+
+Do not claim that comparing display names provides cryptographic identity verification.
+
+Do not automatically trust every device discovered nearby.
+
+## 9.3 Trusted Devices
+
+Allow users to:
+
+- View trusted devices
+- Remove a trusted device
+- Revoke trust
+- Reconnect to a previously trusted device
+- View the last connection time
+- Understand when a new verification is required
+
+Store trust information safely.
+
+---
+
+# PART 10 — SECURITY AND ENCRYPTION
+
+Treat security as a required engineering concern, not a decorative feature.
+
+## 10.1 Threat Model
+
+Document realistic risks, including:
+
+- Unauthorized connection attempts
+- Impersonation
+- Malformed protocol messages
+- Replayed messages
+- Duplicate messages
+- Untrusted file transfers
+- Device loss
+- Local database exposure
+- Incorrect key management
+- Denial-of-service attempts
+- Connection interception where applicable
+
+Explain which risks are mitigated and which remain.
+
+## 10.2 Encryption
+
+Use established cryptographic libraries and protocols appropriate for Android.
+
+Do not invent a custom encryption algorithm.
+
+Use authenticated encryption and appropriate key management.
+
+Protect key material using suitable Android facilities.
+
+Do not store private keys or secrets in plain text.
+
+Do not hardcode encryption keys.
+
+Do not use a constant encryption key shared by every installation.
+
+Do not assume that Bluetooth pairing alone proves the identity of the intended application user.
+
+## 10.3 End-to-End Encryption Claims
+
+Only claim end-to-end encryption if the complete design actually supports it.
+
+The implementation must address:
+
+- Key generation
+- Key exchange
+- Peer authentication
+- Session establishment
+- Authenticated encryption
+- Nonce management
+- Replay protection
+- Key storage
+- Key rotation or renewal where appropriate
+- Reconnection behavior
+- Identity verification
+- Protocol versioning
+
+Do not label the application fully secure merely because it uses AES or another encryption algorithm.
+
+If a production-grade security protocol is beyond the current implementation, document the limitation and keep unsupported security claims out of the UI and README.
+
+## 10.4 Privacy
+
+Core offline messaging should not depend on analytics or remote services.
+
+Do not silently upload contacts, messages, device information, or attachments.
+
+Do not include unnecessary internet permissions.
+
+If an existing component requires internet access, identify the reason and isolate that dependency from core offline messaging.
+
+---
+
+# PART 11 — COMPLETE UI/UX DESIGN
+
+Build an original, polished messaging interface inspired by modern messaging applications.
+
+Do not copy proprietary logos, assets, or trademarks.
+
+Use Xer0byte branding consistently.
+
+## 11.1 Design Goals
+
+The interface should be:
+
+- Modern
+- Clean
+- Professional
+- Responsive
+- Accessible
+- Easy to navigate
+- Suitable for daily use
+- Consistent across screens
+- Smooth on modest Android hardware
+
+Avoid excessive animations, unnecessarily heavy components, and clutter.
+
+Use Material 3 components where appropriate.
+
+## 11.2 Branding
+
+Use the existing Xer0byte brand assets if they are present in the repository.
+
+Inspect the existing logo and colors before changing them.
+
+If no brand system exists, create a consistent visual identity that fits the current Xer0byte project.
+
+Do not replace existing branding without a reason.
+
+## 11.3 Splash Screen
+
+Display:
+
+- Xer0byte branding
+- Appropriate startup state
+
+Avoid unnecessary long splash delays.
+
+Do not falsely show a successful Bluetooth connection during startup.
+
+## 11.4 Onboarding
+
+Explain:
+
+- The application's offline messaging purpose
+- The need for nearby-device communication
+- How device discovery works
+- Why Bluetooth permissions are required
+- The limitations of direct Bluetooth communication
+
+Allow users to skip optional explanations.
+
+## 11.5 Profile Setup
+
+Include:
+
+- Display name
+- Optional profile picture
+- Stable local device identity
+- Save and edit profile
+
+Do not require online login.
+
+## 11.6 Home Screen
+
+The home screen should include:
+
+- Application title
+- Search
+- Recent conversations
+- Conversation previews
+- Timestamps
+- Unread counts
+- Connection indicators where meaningful
+- A clear action to discover nearby devices
+- Empty state when there are no conversations
+
+Do not show fabricated contacts or online statuses.
+
+## 11.7 Nearby Devices Screen
+
+Include:
+
+- Start scanning
+- Stop scanning
+- Bluetooth status
+- Permission status
+- Discovered device list
+- Connection progress
+- Connection errors
+- Retry controls
+- Trust or verification flow
+- Empty discovery state
+
+Ensure buttons perform real actions.
+
+## 11.8 Conversation Screen
+
+Include:
+
+- Contact name
+- Connection status
+- Message list
+- Message timestamps
+- Message bubbles
+- Honest delivery states
+- Text input
+- Send button
+- Retry for failed messages
+- Reply functionality
+- Copy and delete actions
+- Attachment entry point when supported
+
+Handle the software keyboard properly.
+
+Keep the composer visible.
+
+Avoid unnecessary full-screen recomposition or loading the entire conversation history at once.
+
+## 11.9 Settings
+
+Provide suitable sections for:
+
+- Profile
+- Theme
+- Trusted devices
+- Permissions
+- Storage
+- Privacy
+- Notifications
+- About
+- Troubleshooting
+- Application version
+
+Do not add settings for features that do not exist.
+
+## 11.10 Themes
+
+Support light and dark themes if appropriate for the existing project.
+
+Keep text contrast readable.
+
+Ensure controls remain understandable in both themes.
+
+## 11.11 UI State Handling
+
+Every important screen should handle:
+
+- Loading
+- Success
+- Empty state
+- Permission denied
+- Bluetooth disabled
+- Connection failure
+- Disconnected state
+- Database failure
+- Unsupported device
+- Transfer failure, when relevant
+
+Do not leave the user with an infinite loading indicator.
+
+---
+
+# PART 12 — GROUP CHATS
+
+Group messaging is a secondary milestone.
+
+Implement it only after direct two-device messaging is stable.
+
+## 12.1 Group Features
+
+Potential features:
+
+- Create a local group
+- Set a group name
+- Add supported participants
+- Display members
+- Send group messages
+- Receive group messages
+- Display sender identity
+- Maintain group history
+- Track delivery per recipient where supported
+- Handle members disconnecting
+- Remove a participant from local group membership
+
+## 12.2 Group Delivery
+
+Do not assume that a group message has reached every participant because it was sent to one connected device.
+
+Track delivery per recipient where the protocol supports it.
+
+Explain when a participant is unavailable.
+
+## 12.3 Group Architecture
+
+For a simple initial implementation, use direct connections to group members if the connection capacity permits.
+
+If a relay or mesh architecture is introduced, implement and test the additional routing logic.
+
+Do not silently promise unlimited group sizes.
+
+---
+
+# PART 13 — FILE SHARING
+
+File sharing should be implemented after reliable text messaging.
+
+## 13.1 Supported Files
+
+Potential file types:
+
+- Images
+- Documents
+- Audio files
+- Videos
+- Other user-selected files
+
+Support only the types the implementation can handle safely.
+
+## 13.2 File Selection
+
+Use Android's Storage Access Framework or another appropriate Android file-selection mechanism.
+
+Avoid unnecessary broad storage permissions.
+
+## 13.3 File Transfer
+
+Implement:
+
+- File metadata
+- File size validation
+- Configurable file-size limits
+- Transfer progress
+- Cancellation
+- Error handling
+- Transfer completion
+- Integrity verification
+- Duplicate transfer prevention
+- Safe local file storage
+- Handling of interrupted connections
+
+Use chunked transfer for large files.
+
+Do not load an entire large file into memory unnecessarily.
+
+If resumable transfers are supported, use a clearly defined protocol for identifying and verifying received chunks.
+
+Do not advertise resumable transfer until it is implemented and tested.
+
+## 13.4 Transfer UI
+
+Show:
+
+- File name
+- File size
+- Transfer progress
+- Transfer state
+- Cancel action
+- Retry action when appropriate
+- Completed state
+- Failure explanation
+
+Do not display a completed transfer before the data has been received and validated.
+
+---
+
+# PART 14 — VOICE NOTES
+
+Voice notes are a separate feature from live voice calls.
+
+Implement them only after core text messaging is stable.
+
+## 14.1 Recording
+
+Provide:
+
+- Start recording
+- Stop recording
+- Cancel recording
+- Recording duration
+- Recording state
+- Playback preview
+- Send recording
+
+Request microphone permission only when the user chooses to use the feature.
+
+Handle permission denial and recording errors.
+
+Do not record silently.
+
+## 14.2 Voice Note Storage
+
+Store recordings safely.
+
+Use appropriate file handling.
+
+Avoid loading large audio files entirely into memory.
+
+Associate recordings with message records.
+
+## 14.3 Audio Transfer
+
+Transfer audio through the supported communication protocol.
+
+Show progress and errors.
+
+Verify the received file before marking the transfer complete.
+
+Do not label a text message as a working voice note.
+
+---
+
+# PART 15 — LIVE AUDIO CALLS
+
+Live calls are an advanced and optional milestone.
+
+Do not let call development compromise reliable messaging.
+
+## 15.1 Feasibility
+
+Investigate:
+
+- Bluetooth throughput
+- Latency
+- Audio encoding
+- Real-time audio capture
+- Playback
+- Echo handling
+- Audio routing
+- Device compatibility
+- Background behavior
+- Battery consumption
+
+Explain whether the selected Bluetooth transport can support acceptable real-time audio quality.
+
+## 15.2 Call States
+
+If implemented, provide:
+
+- Calling
+- Incoming call
+- Accept
+- Decline
+- Connecting
+- Connected
+- Muted
+- Ended
+- Failed
+- Disconnected
+
+## 15.3 Call Quality
+
+Handle:
+
+- Microphone permission
+- Audio focus
+- Recording interruptions
+- Connection loss
+- Audio resource cleanup
+- User cancellation
+- Unsupported devices
+
+Do not display a decorative call screen that does not carry real audio.
+
+If acceptable call quality cannot be achieved through the chosen transport, document the limitation and propose a technically justified alternative without changing the core offline messaging requirement.
+
+---
+
+# PART 16 — MULTI-DEVICE AND MESH COMMUNICATION
+
+Do not confuse multiple direct connections with mesh networking.
+
+These are different capabilities.
+
+## 16.1 Multiple Direct Connections
+
+Where supported, allow a device to maintain multiple peer connections.
+
+Provide:
+
+- Connection limits
+- Per-peer states
+- Resource management
+- Connection cleanup
+- Error handling
+- Battery-aware behavior
+
+Do not assume every Android phone can maintain the same number of simultaneous connections.
+
+## 16.2 Optional Relay Networking
+
+A future mesh or relay feature may forward messages through intermediate devices.
+
+Implement this only as a separate, documented feature.
+
+If implemented, include:
+
+- Unique message IDs
+- Origin and destination IDs
+- Hop limits or TTL
+- Duplicate suppression
+- Routing decisions
+- Loop prevention
+- Relay permissions or policies
+- Expiration of stale messages
+- Appropriate acknowledgement semantics
+
+Do not automatically relay private messages through untrusted devices without a defined security design.
+
+Do not promise that a message can reach a distant device if no usable path exists.
+
+Do not claim guaranteed range or unlimited connectivity.
+
+---
+
+# PART 17 — BACKGROUND OPERATION AND NOTIFICATIONS
+
+Offline messaging may require receiving connections when the app is not in the foreground.
+
+Investigate the supported Android lifecycle and background execution restrictions.
+
+Do not assume that an ordinary background coroutine can run forever.
+
+If background connectivity is implemented, use an appropriate Android-supported mechanism for the declared SDK and use case.
+
+Where necessary:
+
+- Explain foreground-service requirements.
+- Request only the relevant permissions.
+- Display an appropriate notification.
+- Allow the user to stop the service.
+- Clean up resources.
+- Handle process death.
+- Handle Bluetooth being disabled.
+- Handle battery optimization restrictions honestly.
+
+Do not promise that messages will be received while the app is force-stopped or when Android prevents execution.
+
+Use local notifications when appropriate.
+
+Do not require push notification services for core offline messaging.
+
+---
+
+# PART 18 — PERFORMANCE AND RESOURCE MANAGEMENT
+
+Optimize for ordinary Android phones, including devices with limited memory and processing power.
+
+Avoid unnecessary heavy dependencies.
+
+Focus on:
+
+- Fast startup
+- Efficient Compose rendering
+- Efficient database queries
+- Bounded message queues
+- Efficient socket reading
+- Proper buffering
+- File streaming
+- Memory management
+- Battery usage
+- Connection cleanup
+- Reduced unnecessary recomposition
+
+Handle:
+
+- Large conversation histories
+- Long messages
+- Repeated connection attempts
+- Multiple connected peers
+- Large attachments
+- Low storage
+- Database failures
+- Bluetooth interruption
+- App backgrounding
+- Process recreation
+
+Do not introduce premature optimization that makes the code harder to maintain.
+
+Measure performance where the environment permits.
+
+Report the limitations of any measurements.
+
+---
+
+# PART 19 — ACCESSIBILITY AND USER EXPERIENCE
+
+Ensure that:
+
+- Buttons have meaningful labels.
+- Important actions are understandable.
+- Text remains readable.
+- Touch targets are usable.
+- Error messages explain what happened.
+- Permission denial has a recovery path.
+- Loading states are visible.
+- Users can distinguish sent, delivered, pending, and failed messages.
+- Connection loss is not communicated only through color.
+- The interface remains usable with larger text sizes where practical.
+
+Use appropriate Android accessibility semantics.
+
+Avoid using color as the only indicator of status.
+
+---
+
+# PART 20 — AUTOMATED TESTING
+
+Create or improve automated tests.
+
+Use the project's existing test framework where appropriate.
+
+## 20.1 Unit Tests
+
+Test:
+
+- Message serialization
+- Message deserialization
+- Message framing
+- Invalid payload rejection
+- Maximum payload limits
+- Duplicate message handling
+- Delivery acknowledgement handling
+- Retry decisions
+- Connection state transitions
+- Conversation ordering
+- Unread count logic
+- Database operations
+- Database migrations
+- ViewModel state
+- Error mapping
+
+## 20.2 Database Tests
+
+Verify:
+
+- Insert
+- Read
+- Update
+- Delete
+- Conversation relationships
+- Duplicate prevention
+- Persistence after reopening
+- Migration behavior
+
+## 20.3 UI Tests
+
+Where practical, test:
+
+- Navigation
+- Empty states
+- Permission-denied states
+- Nearby device screen
+- Chat screen
+- Sending state
+- Failed message retry
+- Settings navigation
+
+Do not rely exclusively on screenshot tests.
+
+## 20.4 Bluetooth Testing
+
+Test Bluetooth behavior using the devices and tools available.
+
+If actual Bluetooth hardware is unavailable, create appropriate unit tests around the communication layer and clearly state that physical-device behavior remains unverified.
+
+Do not claim that a mocked transport proves real Bluetooth functionality.
+
+---
+
+# PART 21 — PHYSICAL DEVICE TEST PLAN
+
+Create a manual test plan for at least two physical Android phones.
+
+## Test 1: Clean Installation
+
+Install the same compatible application build on both phones.
+
+Confirm that both applications launch.
+
+## Test 2: Permissions
+
+Grant the required Bluetooth permissions.
+
+Verify that denied permissions produce understandable messages.
+
+## Test 3: Discovery
+
+Enable Bluetooth on both devices.
+
+Start the supported discovery and connection process.
+
+Verify that the correct device can be selected.
+
+## Test 4: Connection
+
+Establish a connection between Phone A and Phone B.
+
+Confirm that both applications show consistent connection states.
+
+## Test 5: Two-Way Messaging
+
+Send a message from A to B.
+
+Reply from B to A.
+
+Verify the content, sender identity, and timestamps.
+
+## Test 6: Offline Operation
+
+Disable internet access and mobile data.
+
+Verify that direct Bluetooth messaging continues to work.
+
+Document any other system services required by the implementation.
+
+## Test 7: Message Persistence
+
+Send messages in both directions.
+
+Close and reopen the applications.
+
+Verify that saved messages remain available.
+
+## Test 8: Connection Interruption
+
+Disconnect Bluetooth during a conversation.
+
+Verify that the application reports the interruption and preserves messages.
+
+## Test 9: Reconnection
+
+Restore Bluetooth availability.
+
+Reconnect and verify that pending messages are handled correctly.
+
+## Test 10: Duplicate Delivery
+
+Cause a retry or repeated transmission where practical.
+
+Verify that the same logical message does not appear multiple times.
+
+## Test 11: Malformed Data
+
+Test invalid protocol data in an isolated test environment.
+
+Verify safe rejection without a crash.
+
+## Test 12: Long Messages
+
+Send long text messages.
+
+Verify that the complete content is transmitted correctly or rejected with a clear documented limit.
+
+## Test 13: Multiple Devices
+
+If multi-peer support is implemented, test with additional physical devices.
+
+Record which connections succeed and any limitations.
+
+## Test 14: Background Behavior
+
+Test the documented background behavior while switching applications, locking the screen, and reopening the app.
+
+Record any operating-system restrictions.
+
+## Test 15: Regression
+
+Repeat the core tests after major changes.
+
+Provide a results table containing:
+
+- Test name
+- Device and Android version
+- Steps performed
+- Expected result
+- Actual result
+- Pass or fail
+- Evidence or notes
+
+Never mark a physical-device test as passed if it was not performed.
+
+---
+
+# PART 22 — BUILD SYSTEM AND ANDROID COMPATIBILITY
+
+Audit the Gradle configuration.
+
+Verify:
+
+- Android Gradle Plugin compatibility
+- Kotlin version compatibility
+- Gradle wrapper
+- Compile SDK
+- Target SDK
+- Minimum SDK
+- Dependency compatibility
+- Manifest configuration
+- Debug build
+- Release build
+- Test tasks
+
+Preserve the current package name unless a justified change is necessary.
+
+Do not change the package name casually because it may affect application identity, installation, updates, and signing.
+
+Avoid unnecessary dependency updates.
+
+If a build fails:
+
+1. Capture the exact error.
+2. Identify the responsible configuration or source file.
+3. Fix the root cause.
+4. Run the relevant task again.
+5. Report the actual result.
+
+Do not suppress errors simply to claim a successful build.
+
+---
+
+# PART 23 — APK GENERATION AND INSTALLATION
+
+Prepare the application for actual Android installation.
+
+## 23.1 Debug APK
+
+When the environment supports Android builds:
+
+- Build the debug APK.
+- Verify that the build succeeded.
+- Identify the actual APK path.
+- Confirm that the file exists.
+- Report its size.
+- Explain how to install it.
+
+## 23.2 Release APK
+
+When the project is ready:
+
+- Configure a reproducible release build.
+- Apply appropriate R8 or ProGuard configuration where necessary.
+- Preserve required classes and resources.
+- Verify release compilation.
+- Explain signing requirements.
+- Generate a signed release APK only when the required signing configuration is available.
+
+Never fabricate a download link.
+
+Never invent signing credentials.
+
+Never include private signing keys or passwords in source control.
+
+If signing information is unavailable, explain the required manual steps.
+
+## 23.3 Installation Instructions
+
+Provide instructions for:
+
+- Installing on a physical Android device
+- Handling the installation permission if required
+- Granting Bluetooth permissions
+- Connecting two devices
+- Testing offline messaging
+- Collecting logs if something fails
+
+---
+
+# PART 24 — GITHUB ACTIONS AND RELEASE AUTOMATION
+
+Inspect the existing workflows before modifying them.
+
+If appropriate, configure automated checks for:
+
+- Project compilation
+- Unit tests
+- Static checks
+- Debug APK generation
+
+Do not store signing passwords, private keys, or access tokens in source code.
+
+Use appropriate GitHub secret management if release signing is configured.
+
+Do not automatically publish an unverified release.
+
+Do not push changes to the main branch without authorization when the environment requires explicit approval.
+
+Provide a summary of changed files and release artifacts.
+
+---
+
+# PART 25 — README AND DOCUMENTATION
+
+Update README.md to reflect the actual implementation.
+
+Include:
+
+1. Project introduction
+2. Product goals
+3. Actual working features
+4. Features still under development
+5. Technology stack
+6. Architecture
+7. Supported Android versions
+8. Required permissions
+9. Build instructions
+10. Installation instructions
+11. Bluetooth setup
+12. Two-device testing guide
+13. Offline operation
+14. Troubleshooting
+15. Security model
+16. Privacy limitations
+17. Known bugs
+18. Test results
+19. APK availability, if actually generated
+20. Future roadmap
+
+Clearly distinguish working features from planned features.
+
+Do not advertise unverified functionality.
+
+Do not promise unlimited Bluetooth range.
+
+Do not promise unlimited simultaneous connections.
+
+Do not claim universal Android compatibility.
+
+Do not claim complete encryption unless the implementation supports the claim.
+
+---
+
+# PART 26 — DEVELOPMENT ROADMAP
+
+Implement the project incrementally in the following order.
+
+## Phase A: Audit
+
+Inspect the existing repository and produce the audit report.
+
+## Phase B: Build and Startup
+
+Fix confirmed build failures and startup problems.
+
+Preserve the existing application identity.
+
+## Phase C: Bluetooth Fundamentals
+
+Stabilize permissions, discovery, connection establishment, and cleanup.
+
+## Phase D: Reliable Text Messaging
+
+Implement real two-way text messaging with correct message framing and error handling.
+
+## Phase E: Database and Delivery
+
+Implement persistence, acknowledgements, deduplication, retries, and honest delivery states.
+
+## Phase F: UI/UX
+
+Polish the actual functional screens and connection states.
+
+## Phase G: Security
+
+Implement device verification and a documented secure communication design.
+
+## Phase H: Attachments
+
+Implement and test file transfer.
+
+## Phase I: Groups and Multi-Peer Connections
+
+Add group messaging and multi-device support where technically feasible.
+
+## Phase J: Voice Notes
+
+Implement recording, playback, and transfer.
+
+## Phase K: Live Audio Calls
+
+Investigate feasibility and implement only if acceptable behavior can be achieved.
+
+## Phase L: Reliability and Release
+
+Run regression tests, update documentation, prepare the APK, and report limitations.
+
+Do not attempt to complete every phase in a single unverified rewrite.
+
+After each phase, report:
+
+- Work completed
+- Files changed
+- Problems fixed
+- Tests executed
+- Actual results
+- Remaining issues
+- Next recommended phase
+
+Continue automatically to the next phase when the environment supports implementation and the current phase's prerequisites have been met.
+
+If user approval, repository access, signing credentials, or another external action is genuinely required, explain exactly what is needed.
+
+---
+
+# PART 27 — ACCEPTANCE CRITERIA
+
+The core product is not complete until the following requirements have been verified to the extent possible.
+
+## Required Core Functionality
+
+- [ ] The application builds successfully.
+- [ ] The application launches.
+- [ ] Bluetooth permissions are handled correctly.
+- [ ] Nearby-device discovery works on supported devices.
+- [ ] Two compatible phones can establish a real connection.
+- [ ] Phone A can send a text message to Phone B.
+- [ ] Phone B can reply to Phone A.
+- [ ] Core messaging works without internet access.
+- [ ] Messages are saved locally.
+- [ ] Conversation history survives an application restart.
+- [ ] Delivery states are honest and correctly defined.
+- [ ] Failed messages can be retried.
+- [ ] Duplicate messages are handled safely.
+- [ ] Connection interruption does not silently delete messages.
+- [ ] Resources are cleaned up correctly.
+- [ ] The UI reflects actual connection and delivery states.
+- [ ] Security limitations are documented.
+- [ ] Automated tests are provided and run where possible.
+- [ ] Physical-device tests are documented honestly.
+- [ ] README.md matches the implementation.
+
+## Advanced Features
+
+Track these separately:
+
+- [ ] Device verification
+- [ ] Verified encryption design
+- [ ] File transfer
+- [ ] Group messaging
+- [ ] Multiple simultaneous peers
+- [ ] Mesh or relay messaging
+- [ ] Voice notes
+- [ ] Live audio calls
+- [ ] Background receiving
+- [ ] Release APK
+- [ ] Automated release workflow
+
+Do not block a working text messenger merely because every advanced feature is not yet implemented.
+
+Do not mark an advanced feature complete unless it has been implemented and tested appropriately.
+
+---
+
+# PART 28 — REQUIRED FINAL REPORT
+
+At the end of the work, provide a professional report containing:
+
+## A. Project Status
+
+Summarize the original state and the final state.
+
+## B. Implemented Features
+
+List only features that were actually implemented.
+
+## C. Bugs Fixed
+
+For each significant bug, provide:
+
+- Problem
+- Root cause
+- File changed
+- Solution
+- Verification
+
+## D. Architecture
+
+Explain the final communication, database, and UI architecture.
+
+## E. Security
+
+Explain the actual implemented security protections and remaining limitations.
+
+## F. Testing
+
+List the commands executed, their actual outcomes, and the tests that remain unverified.
+
+## G. Build Artifacts
+
+If generated, provide the actual APK path and installation instructions.
+
+## H. Remaining Problems
+
+List known issues, missing features, and device-specific limitations.
+
+## I. Next Steps
+
+Provide the next highest-priority development tasks.
+
+## J. Change Summary
+
+List all significant files created, changed, or removed, with reasons.
+
+Do not hide unresolved errors.
+
+Do not report a successful release if the application could not be built.
+
+---
+
+# FINAL EXECUTION INSTRUCTION
+
+Start by inspecting the existing repository:
+
+https://github.com/Xer0byte/Xer0byte-App
+
+Do not assume that the repository is empty.
+
+Do not replace the project with a new template.
+
+Do not generate fake implementation summaries.
+
+Audit the existing code, identify the most important real problems, and then implement the highest-priority improvements using the existing codebase.
+
+Prioritize a reliable, genuinely offline, two-device Bluetooth text messenger before adding advanced functionality.
+
+Use the tools actually available in the current environment.
+
+If you can edit files, make the changes.
+
+If you can run builds, run them.
+
+If you can run tests, run them.
+
+If you can generate an APK, generate it and verify that it exists.
+
+If you cannot perform a task, explain why and provide the exact next action needed.
+
+Work systematically, preserve existing functionality, verify every claim, and make Xer0byte as reliable and maintainable as possible.

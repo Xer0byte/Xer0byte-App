@@ -82,6 +82,13 @@ class ChatRepository(
     }
 
     private suspend fun handleInboundPacket(packet: BluetoothPacket) {
+        // If this is an ACK packet, update the target message status to DELIVERED or READ
+        if (packet.type == "ACK") {
+            val targetMsgId = packet.extra ?: packet.id
+            messageDao.updateMessageStatusById(targetMsgId, MessageStatus.DELIVERED)
+            return
+        }
+
         val chatId = packet.senderName.replace(" ", "_").lowercase()
         
         // Ensure conversation exists
@@ -129,6 +136,22 @@ class ChatRepository(
             extraData = packet.extra
         )
         messageDao.insertMessage(message)
+
+        // Send back an authentic Bluetooth ACK receipt
+        try {
+            val myName = bluetoothManager.getMyDeviceName()
+            val ackPacket = BluetoothPacket(
+                id = UUID.randomUUID().toString(),
+                type = "ACK",
+                senderName = myName,
+                text = "ACK",
+                timestamp = System.currentTimeMillis(),
+                extra = packet.id
+            )
+            bluetoothManager.sendPacket(ackPacket, targetAddress = existing?.peerAddress)
+        } catch (e: Exception) {
+            // Best-effort delivery acknowledgment
+        }
     }
 
     fun getAllConversations(): Flow<List<ChatConversationEntity>> =
