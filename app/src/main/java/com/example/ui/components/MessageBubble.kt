@@ -40,6 +40,10 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.graphics.Brush
+import com.example.ui.theme.GlassEmeraldGlowBorder
+import com.example.ui.theme.GlassSpecularWhiteBorder
+import com.example.ui.theme.liquidGlass
 import com.example.data.model.MessageEntity
 import com.example.data.model.MessageStatus
 import com.example.data.model.MessageType
@@ -59,19 +63,30 @@ fun MessageBubble(
     modifier: Modifier = Modifier
 ) {
     val isMe = message.isFromMe
-    val isDark = MaterialTheme.colorScheme.background.red < 0.5f
-
-    val bubbleColor = if (isMe) {
-        if (isDark) WhatsAppDarkBubbleOutgoing else WhatsAppLightBubbleOutgoing
-    } else {
-        if (isDark) WhatsAppDarkBubbleIncoming else WhatsAppLightBubbleIncoming
-    }
 
     val bubbleShape = if (isMe) {
         RoundedCornerShape(topStart = 16.dp, topEnd = 4.dp, bottomStart = 16.dp, bottomEnd = 16.dp)
     } else {
         RoundedCornerShape(topStart = 4.dp, topEnd = 16.dp, bottomStart = 16.dp, bottomEnd = 16.dp)
     }
+
+    val bubbleSurfaceBrush = if (isMe) {
+        Brush.verticalGradient(
+            listOf(
+                Color(0xFF005C4B).copy(alpha = 0.90f),
+                Color(0xFF063E33).copy(alpha = 0.80f)
+            )
+        )
+    } else {
+        Brush.verticalGradient(
+            listOf(
+                Color(0xFF1F2E3A).copy(alpha = 0.85f),
+                Color(0xFF131E27).copy(alpha = 0.75f)
+            )
+        )
+    }
+
+    val bubbleBorderBrush = if (isMe) GlassEmeraldGlowBorder else GlassSpecularWhiteBorder
 
     val timeString = remember(message.timestamp) {
         SimpleDateFormat("hh:mm a", Locale.getDefault()).format(Date(message.timestamp))
@@ -86,8 +101,13 @@ fun MessageBubble(
         Column(
             modifier = Modifier
                 .widthIn(min = 80.dp, max = 300.dp)
-                .clip(bubbleShape)
-                .background(bubbleColor)
+                .liquidGlass(
+                    shape = bubbleShape,
+                    surfaceBrush = bubbleSurfaceBrush,
+                    borderBrush = bubbleBorderBrush,
+                    borderWidth = 0.8.dp,
+                    hasTopSpecularHighlight = true
+                )
                 .padding(horizontal = 10.dp, vertical = 7.dp)
                 .testTag("message_bubble_${message.id}")
         ) {

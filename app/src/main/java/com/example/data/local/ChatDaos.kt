@@ -52,6 +52,12 @@ interface ConversationDao {
 
     @Query("UPDATE conversations SET unreadCount = 0 WHERE id = :id")
     suspend fun clearUnread(id: String)
+
+    @Query("DELETE FROM conversations WHERE id = :id")
+    suspend fun deleteConversation(id: String)
+
+    @Query("DELETE FROM conversations")
+    suspend fun deleteAllConversations()
 }
 
 @Dao
@@ -67,6 +73,12 @@ interface StatusDao {
 
     @Query("UPDATE statuses SET isViewed = 1 WHERE id = :id")
     suspend fun markStatusViewed(id: String)
+
+    @Query("DELETE FROM statuses WHERE id = :id")
+    suspend fun deleteStatus(id: String)
+
+    @Query("DELETE FROM statuses")
+    suspend fun deleteAllStatuses()
 }
 
 @Dao
@@ -79,4 +91,10 @@ interface CallLogDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertCallLogs(callLogs: List<CallLogEntity>)
+
+    @Query("DELETE FROM call_logs WHERE id = :id")
+    suspend fun deleteCallLog(id: String)
+
+    @Query("DELETE FROM call_logs")
+    suspend fun deleteAllCallLogs()
 }

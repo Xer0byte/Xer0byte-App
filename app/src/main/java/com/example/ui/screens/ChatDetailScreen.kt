@@ -64,6 +64,13 @@ import com.example.R
 import com.example.data.model.MessageType
 import com.example.ui.components.AttachmentMenu
 import com.example.ui.components.MessageBubble
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
+import com.example.ui.theme.AmbientLiquidBackdrop
+import com.example.ui.theme.GlassEmeraldGlowBorder
+import com.example.ui.theme.GlassSpecularWhiteBorder
+import com.example.ui.theme.liquidGlass
 import com.example.ui.theme.WhatsAppBadgeGreen
 import com.example.ui.viewmodel.ChatViewModel
 
@@ -99,12 +106,34 @@ fun ChatDetailScreen(
     Scaffold(
         modifier = modifier.fillMaxSize(),
         topBar = {
-            // WhatsApp Chat Top Bar
+            // Liquid Glass Chat Top Bar
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(MaterialTheme.colorScheme.surface)
+                    .background(
+                        Brush.verticalGradient(
+                            listOf(
+                                Color(0xFF16232D).copy(alpha = 0.90f),
+                                Color(0xFF0F1820).copy(alpha = 0.80f)
+                            )
+                        )
+                    )
                     .statusBarsPadding()
+                    .drawBehind {
+                        drawLine(
+                            brush = Brush.horizontalGradient(
+                                listOf(
+                                    Color.Transparent,
+                                    Color.White.copy(alpha = 0.22f),
+                                    WhatsAppBadgeGreen.copy(alpha = 0.40f),
+                                    Color.Transparent
+                                )
+                            ),
+                            start = Offset(0f, size.height),
+                            end = Offset(size.width, size.height),
+                            strokeWidth = 1.dp.toPx()
+                        )
+                    }
                     .padding(horizontal = 6.dp, vertical = 6.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -213,18 +242,18 @@ fun ChatDetailScreen(
             }
         }
     ) { innerPadding ->
-        Box(
+        AmbientLiquidBackdrop(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
-            // WhatsApp authentic wallpaper background
+            // WhatsApp authentic wallpaper background with ambient liquid blend
             Image(
                 painter = painterResource(id = R.drawable.whatsapp_chat_bg_1792776728648),
                 contentDescription = "Wallpaper",
                 contentScale = ContentScale.Crop,
                 modifier = Modifier.fillMaxSize(),
-                alpha = if (MaterialTheme.colorScheme.background.red < 0.5f) 0.12f else 0.45f
+                alpha = 0.08f
             )
 
             // Chat area
@@ -256,8 +285,17 @@ fun ChatDetailScreen(
                         ) {
                             Box(
                                 modifier = Modifier
-                                    .clip(RoundedCornerShape(8.dp))
-                                    .background(Color(0xFF1F2C34).copy(alpha = 0.9f))
+                                    .liquidGlass(
+                                        shape = RoundedCornerShape(12.dp),
+                                        surfaceBrush = Brush.verticalGradient(
+                                            listOf(
+                                                Color(0xFF1E2B37).copy(alpha = 0.75f),
+                                                Color(0xFF101921).copy(alpha = 0.60f)
+                                            )
+                                        ),
+                                        borderBrush = GlassSpecularWhiteBorder,
+                                        borderWidth = 0.8.dp
+                                    )
                                     .padding(horizontal = 12.dp, vertical = 6.dp)
                             ) {
                                 Row(
@@ -334,12 +372,21 @@ fun ChatDetailScreen(
                         .navigationBarsPadding(),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    // Rounded text box
+                    // Liquid Glass Rounded text capsule
                     Row(
                         modifier = Modifier
                             .weight(1f)
-                            .clip(RoundedCornerShape(26.dp))
-                            .background(MaterialTheme.colorScheme.surface)
+                            .liquidGlass(
+                                shape = RoundedCornerShape(26.dp),
+                                surfaceBrush = Brush.verticalGradient(
+                                    listOf(
+                                        Color(0xFF1E2D3A).copy(alpha = 0.90f),
+                                        Color(0xFF121D25).copy(alpha = 0.82f)
+                                    )
+                                ),
+                                borderBrush = GlassSpecularWhiteBorder,
+                                borderWidth = 1.dp
+                            )
                             .padding(horizontal = 4.dp, vertical = 2.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
@@ -400,12 +447,21 @@ fun ChatDetailScreen(
 
                     Spacer(modifier = Modifier.width(6.dp))
 
-                    // Mic / Send button (circle)
+                    // Mic / Send button (liquid glass glowing circle)
                     Box(
                         modifier = Modifier
                             .size(48.dp)
-                            .clip(CircleShape)
-                            .background(WhatsAppBadgeGreen)
+                            .liquidGlass(
+                                shape = CircleShape,
+                                surfaceBrush = Brush.radialGradient(
+                                    listOf(
+                                        WhatsAppBadgeGreen,
+                                        Color(0xFF00A884)
+                                    )
+                                ),
+                                borderBrush = GlassSpecularWhiteBorder,
+                                borderWidth = 1.dp
+                            )
                             .clickable {
                                 if (inputText.isNotBlank()) {
                                     viewModel.sendMessage(inputText.trim(), MessageType.TEXT, null)

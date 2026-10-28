@@ -56,6 +56,16 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
+import com.example.ui.theme.AmbientLiquidBackdrop
+import com.example.ui.theme.GlassEmeraldGlowBorder
+import com.example.ui.theme.GlassLiquidSurfaceActive
+import com.example.ui.theme.GlassLiquidSurfaceDark
+import com.example.ui.theme.GlassSpecularWhiteBorder
+import com.example.ui.theme.LiquidGlassCard
+import com.example.ui.theme.liquidGlass
 import com.example.ui.theme.WhatsAppBadgeGreen
 import com.example.ui.viewmodel.AppScreen
 import com.example.ui.viewmodel.ChatViewModel
@@ -78,8 +88,30 @@ fun SettingsScreen(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(MaterialTheme.colorScheme.surface)
+                    .background(
+                        Brush.verticalGradient(
+                            listOf(
+                                Color(0xFF16232D).copy(alpha = 0.90f),
+                                Color(0xFF0F1820).copy(alpha = 0.80f)
+                            )
+                        )
+                    )
                     .statusBarsPadding()
+                    .drawBehind {
+                        drawLine(
+                            brush = Brush.horizontalGradient(
+                                listOf(
+                                    Color.Transparent,
+                                    Color.White.copy(alpha = 0.22f),
+                                    WhatsAppBadgeGreen.copy(alpha = 0.40f),
+                                    Color.Transparent
+                                )
+                            ),
+                            start = Offset(0f, size.height),
+                            end = Offset(size.width, size.height),
+                            strokeWidth = 1.dp.toPx()
+                        )
+                    }
                     .padding(horizontal = 6.dp, vertical = 8.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -111,72 +143,96 @@ fun SettingsScreen(
             }
         }
     ) { innerPadding ->
-        Box(
+        AmbientLiquidBackdrop(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .background(MaterialTheme.colorScheme.background),
-            contentAlignment = Alignment.TopCenter
         ) {
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
                     .widthIn(max = 680.dp)
+                    .align(Alignment.TopCenter)
+                    .padding(horizontal = 14.dp, vertical = 10.dp)
             ) {
-                // Profile Card (WhatsApp style with Ghaznain Ahmad & Xer0byte)
+                // Profile Card (Liquid Glass style)
                 item {
-                    Row(
+                    LiquidGlassCard(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .clickable { showAboutDialog = true }
-                            .padding(horizontal = 16.dp, vertical = 14.dp),
-                        verticalAlignment = Alignment.CenterVertically
+                            .padding(vertical = 8.dp),
+                        shape = RoundedCornerShape(20.dp),
+                        surfaceBrush = GlassLiquidSurfaceDark,
+                        borderBrush = GlassSpecularWhiteBorder,
+                        borderWidth = 1.dp,
+                        onClick = { showAboutDialog = true }
                     ) {
-                        Image(
-                            painter = painterResource(id = R.drawable.xer0byte_logo_square),
-                            contentDescription = "Xer0byte Logo",
+                        Row(
                             modifier = Modifier
-                                .size(62.dp)
-                                .clip(CircleShape)
-                                .background(Color.Black)
-                        )
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp, vertical = 14.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .size(64.dp)
+                                    .liquidGlass(
+                                        shape = CircleShape,
+                                        surfaceBrush = Brush.radialGradient(
+                                            listOf(
+                                                WhatsAppBadgeGreen.copy(alpha = 0.35f),
+                                                Color(0xFF00A884).copy(alpha = 0.15f),
+                                                Color.Black
+                                            )
+                                        ),
+                                        borderBrush = GlassEmeraldGlowBorder,
+                                        borderWidth = 1.2.dp
+                                    ),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Image(
+                                    painter = painterResource(id = R.drawable.xer0byte_logo_square),
+                                    contentDescription = "Xer0byte Logo",
+                                    modifier = Modifier
+                                        .size(54.dp)
+                                        .clip(CircleShape)
+                                )
+                            }
 
-                        Spacer(modifier = Modifier.width(16.dp))
+                            Spacer(modifier = Modifier.width(16.dp))
 
-                        Column(modifier = Modifier.weight(1f)) {
-                            Text(
-                                text = btState.myDeviceName,
-                                fontSize = 18.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.onSurface
-                            )
-                            Text(
-                                text = "Bluetooth Account (Device ID)",
-                                fontSize = 13.sp,
-                                fontWeight = FontWeight.SemiBold,
-                                color = WhatsAppBadgeGreen
-                            )
-                            Text(
-                                text = "Organization: Xer0byte • Founder: Ghaznain Ahmad",
-                                fontSize = 11.sp,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text(
+                                    text = btState.myDeviceName,
+                                    fontSize = 18.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.onSurface
+                                )
+                                Text(
+                                    text = "Bluetooth Account (Device ID)",
+                                    fontSize = 13.sp,
+                                    fontWeight = FontWeight.SemiBold,
+                                    color = WhatsAppBadgeGreen
+                                )
+                                Text(
+                                    text = "Organization: Xer0byte • Founder: Ghaznain Ahmad",
+                                    fontSize = 11.sp,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+
+                            IconButton(onClick = { }) {
+                                Icon(
+                                    imageVector = Icons.Default.QrCode,
+                                    contentDescription = "QR Code",
+                                    tint = MaterialTheme.colorScheme.primary
+                                )
+                            }
                         }
-
-                    IconButton(onClick = { }) {
-                        Icon(
-                            imageVector = Icons.Default.QrCode,
-                            contentDescription = "QR Code",
-                            tint = MaterialTheme.colorScheme.primary
-                        )
                     }
-                }
 
-                HorizontalDivider(
-                    color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
-                    modifier = Modifier.padding(vertical = 4.dp)
-                )
-            }
+                    Spacer(modifier = Modifier.height(10.dp))
+                }
 
             // Xer0byte Bluetooth Engine Card
             item {

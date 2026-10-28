@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Bluetooth
 import androidx.compose.material.icons.filled.BluetoothConnected
@@ -43,11 +44,17 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.data.bluetooth.BluetoothConnectionState
+import com.example.ui.theme.GlassEmeraldGlowBorder
+import com.example.ui.theme.GlassSpecularWhiteBorder
 import com.example.ui.theme.WhatsAppBadgeGreen
+import com.example.ui.theme.liquidGlass
 import com.example.ui.viewmodel.AppScreen
 import com.example.ui.viewmodel.ChatViewModel
 
@@ -64,15 +71,49 @@ fun WhatsAppTopBar(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.surface)
+            .background(
+                Brush.verticalGradient(
+                    listOf(
+                        Color(0xFF16232D).copy(alpha = 0.88f),
+                        Color(0xFF0F1820).copy(alpha = 0.78f)
+                    )
+                )
+            )
             .statusBarsPadding()
+            .drawBehind {
+                // Bottom specular border for liquid glass shelf reflection
+                drawLine(
+                    brush = Brush.horizontalGradient(
+                        listOf(
+                            Color.Transparent,
+                            Color.White.copy(alpha = 0.22f),
+                            WhatsAppBadgeGreen.copy(alpha = 0.40f),
+                            Color.White.copy(alpha = 0.15f),
+                            Color.Transparent
+                        )
+                    ),
+                    start = Offset(0f, size.height),
+                    end = Offset(size.width, size.height),
+                    strokeWidth = 1.dp.toPx()
+                )
+            }
     ) {
         if (uiState.isSearching) {
-            // WhatsApp Search bar
+            // Liquid Glass Search bar
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 8.dp, vertical = 6.dp),
+                    .padding(horizontal = 12.dp, vertical = 6.dp)
+                    .liquidGlass(
+                        shape = RoundedCornerShape(24.dp),
+                        surfaceBrush = Brush.verticalGradient(
+                            listOf(
+                                Color(0xFF22313E).copy(alpha = 0.75f),
+                                Color(0xFF17222B).copy(alpha = 0.60f)
+                            )
+                        )
+                    )
+                    .padding(horizontal = 6.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 IconButton(
@@ -130,7 +171,17 @@ fun WhatsAppTopBar(
                         Spacer(modifier = Modifier.width(6.dp))
                         Box(
                             modifier = Modifier
-                                .background(Color(0xFF005C4B).copy(alpha = 0.35f), shape = CircleShape)
+                                .liquidGlass(
+                                    shape = RoundedCornerShape(12.dp),
+                                    surfaceBrush = Brush.horizontalGradient(
+                                        listOf(
+                                            WhatsAppBadgeGreen.copy(alpha = 0.22f),
+                                            Color(0xFF005C4B).copy(alpha = 0.32f)
+                                        )
+                                    ),
+                                    borderBrush = GlassEmeraldGlowBorder,
+                                    borderWidth = 0.8.dp
+                                )
                                 .padding(horizontal = 7.dp, vertical = 2.dp)
                         ) {
                             Row(verticalAlignment = Alignment.CenterVertically) {

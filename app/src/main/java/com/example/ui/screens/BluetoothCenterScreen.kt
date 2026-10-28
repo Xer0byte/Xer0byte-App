@@ -53,6 +53,16 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
+import com.example.ui.theme.AmbientLiquidBackdrop
+import com.example.ui.theme.GlassEmeraldGlowBorder
+import com.example.ui.theme.GlassLiquidSurfaceActive
+import com.example.ui.theme.GlassLiquidSurfaceDark
+import com.example.ui.theme.GlassSpecularWhiteBorder
+import com.example.ui.theme.LiquidGlassCard
+import com.example.ui.theme.liquidGlass
 import com.example.data.bluetooth.BluetoothConnectionState
 import com.example.data.bluetooth.BluetoothPeerDevice
 import com.example.ui.theme.WhatsAppBadgeGreen
@@ -76,8 +86,30 @@ fun BluetoothCenterScreen(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(MaterialTheme.colorScheme.surface)
+                    .background(
+                        Brush.verticalGradient(
+                            listOf(
+                                Color(0xFF16232D).copy(alpha = 0.88f),
+                                Color(0xFF0F1820).copy(alpha = 0.78f)
+                            )
+                        )
+                    )
                     .statusBarsPadding()
+                    .drawBehind {
+                        drawLine(
+                            brush = Brush.horizontalGradient(
+                                listOf(
+                                    Color.Transparent,
+                                    Color.White.copy(alpha = 0.22f),
+                                    WhatsAppBadgeGreen.copy(alpha = 0.40f),
+                                    Color.Transparent
+                                )
+                            ),
+                            start = Offset(0f, size.height),
+                            end = Offset(size.width, size.height),
+                            strokeWidth = 1.dp.toPx()
+                        )
+                    }
                     .padding(horizontal = 6.dp, vertical = 8.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -108,27 +140,26 @@ fun BluetoothCenterScreen(
             }
         }
     ) { innerPadding ->
-        Box(
+        AmbientLiquidBackdrop(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .background(MaterialTheme.colorScheme.background),
-            contentAlignment = Alignment.TopCenter
         ) {
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
                     .widthIn(max = 680.dp)
+                    .align(Alignment.TopCenter)
                     .padding(16.dp)
             ) {
             // Status Card
             item {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clip(RoundedCornerShape(16.dp))
-                        .background(MaterialTheme.colorScheme.surface)
-                        .padding(16.dp)
+                LiquidGlassCard(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(20.dp),
+                    surfaceBrush = if (btState.connectionState == BluetoothConnectionState.CONNECTED) GlassLiquidSurfaceActive else GlassLiquidSurfaceDark,
+                    borderBrush = if (btState.connectionState == BluetoothConnectionState.CONNECTED) GlassEmeraldGlowBorder else GlassSpecularWhiteBorder,
+                    borderWidth = 1.dp
                 ) {
                     Column {
                         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -375,72 +406,89 @@ private fun DeviceRow(
     isConnected: Boolean,
     onConnect: () -> Unit
 ) {
-    Row(
+    LiquidGlassCard(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(10.dp))
-            .background(MaterialTheme.colorScheme.surface)
-            .clickable(onClick = onConnect)
-            .padding(12.dp),
-        verticalAlignment = Alignment.CenterVertically
+            .padding(vertical = 4.dp),
+        shape = RoundedCornerShape(14.dp),
+        surfaceBrush = if (isConnected) GlassLiquidSurfaceActive else GlassLiquidSurfaceDark,
+        borderBrush = if (isConnected) GlassEmeraldGlowBorder else GlassSpecularWhiteBorder,
+        borderWidth = 1.dp,
+        onClick = onConnect
     ) {
-        Box(contentAlignment = Alignment.Center) {
-            Icon(
-                imageVector = Icons.Default.Devices,
-                contentDescription = "Device",
-                tint = if (isConnected) WhatsAppBadgeGreen else MaterialTheme.colorScheme.onSurfaceVariant
-            )
-            if (isConnected) {
-                Box(
-                    modifier = Modifier
-                        .align(Alignment.BottomEnd)
-                        .size(10.dp)
-                        .background(MaterialTheme.colorScheme.surface, shape = CircleShape)
-                        .padding(1.dp)
-                        .background(WhatsAppBadgeGreen, shape = CircleShape)
-                )
-            }
-        }
-        Spacer(modifier = Modifier.width(12.dp))
-        Column(modifier = Modifier.weight(1f)) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(
-                    text = device.name,
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    color = MaterialTheme.colorScheme.onSurface
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 14.dp, vertical = 12.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Box(contentAlignment = Alignment.Center) {
+                Icon(
+                    imageVector = Icons.Default.Devices,
+                    contentDescription = "Device",
+                    tint = if (isConnected) WhatsAppBadgeGreen else MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 if (isConnected) {
-                    Spacer(modifier = Modifier.width(6.dp))
                     Box(
                         modifier = Modifier
-                            .size(7.dp)
+                            .align(Alignment.BottomEnd)
+                            .size(10.dp)
+                            .background(Color(0xFF090E11), shape = CircleShape)
+                            .padding(1.dp)
                             .background(WhatsAppBadgeGreen, shape = CircleShape)
                     )
                 }
             }
-            Text(
-                text = device.address,
-                fontSize = 11.sp,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-        }
-        if (isConnected) {
-            Box(
-                modifier = Modifier
-                    .background(WhatsAppBadgeGreen, shape = RoundedCornerShape(6.dp))
-                    .padding(horizontal = 8.dp, vertical = 3.dp)
-            ) {
-                Text("Connected 🟢", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = Color.Black)
+            Spacer(modifier = Modifier.width(12.dp))
+            Column(modifier = Modifier.weight(1f)) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        text = device.name,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                    if (isConnected) {
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Box(
+                            modifier = Modifier
+                                .size(7.dp)
+                                .background(WhatsAppBadgeGreen, shape = CircleShape)
+                        )
+                    }
+                }
+                Text(
+                    text = device.address,
+                    fontSize = 11.sp,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
             }
-        } else {
-            OutlinedButton(
-                onClick = onConnect,
-                modifier = Modifier.height(34.dp).testTag("connect_${device.address}")
-            ) {
-                Text("Connect", fontSize = 11.sp)
+            if (isConnected) {
+                Box(
+                    modifier = Modifier
+                        .liquidGlass(
+                            shape = RoundedCornerShape(8.dp),
+                            surfaceBrush = Brush.horizontalGradient(
+                                listOf(
+                                    WhatsAppBadgeGreen.copy(alpha = 0.30f),
+                                    Color(0xFF005C4B).copy(alpha = 0.40f)
+                                )
+                            ),
+                            borderBrush = GlassEmeraldGlowBorder,
+                            borderWidth = 0.8.dp
+                        )
+                        .padding(horizontal = 10.dp, vertical = 5.dp)
+                ) {
+                    Text("Connected 🟢", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = WhatsAppBadgeGreen)
+                }
+            } else {
+                OutlinedButton(
+                    onClick = onConnect,
+                    modifier = Modifier.height(34.dp).testTag("connect_${device.address}")
+                ) {
+                    Text("Connect", fontSize = 11.sp)
+                }
             }
         }
     }
-    Spacer(modifier = Modifier.height(6.dp))
 }

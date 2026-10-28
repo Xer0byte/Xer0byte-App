@@ -35,6 +35,8 @@ import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material.icons.filled.PushPin
 import androidx.compose.material.icons.filled.Videocam
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.HorizontalDivider
@@ -54,6 +56,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -63,6 +66,14 @@ import com.example.data.model.ChatConversationEntity
 import com.example.data.model.StatusUpdateEntity
 import com.example.ui.components.WhatsAppBottomNav
 import com.example.ui.components.WhatsAppTopBar
+import androidx.compose.ui.graphics.Brush
+import com.example.ui.theme.AmbientLiquidBackdrop
+import com.example.ui.theme.GlassEmeraldGlowBorder
+import com.example.ui.theme.GlassLiquidSurfaceActive
+import com.example.ui.theme.GlassLiquidSurfaceDark
+import com.example.ui.theme.GlassSpecularWhiteBorder
+import com.example.ui.theme.LiquidGlassCard
+import com.example.ui.theme.liquidGlass
 import com.example.ui.theme.WhatsAppBadgeGreen
 import com.example.ui.theme.WhatsAppCheckmarkBlue
 import com.example.ui.theme.WhatsAppGreenLight
@@ -148,17 +159,16 @@ fun HomeScreen(
             }
         }
     ) { innerPadding ->
-        Box(
+        AmbientLiquidBackdrop(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .background(MaterialTheme.colorScheme.background),
-            contentAlignment = Alignment.TopCenter
         ) {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
                     .widthIn(max = 680.dp)
+                    .align(Alignment.TopCenter)
             ) {
                 when (uiState.activeTab) {
                     HomeTab.CHATS -> {
@@ -180,8 +190,12 @@ fun HomeScreen(
                     HomeTab.COMMUNITIES -> {
                         CommunitiesTabContent(
                             onOpenCommunity = {
-                                val meshChat = conversations.find { it.id == "xer0byte_mesh_group" }
-                                if (meshChat != null) viewModel.openChat(meshChat)
+                                val firstChat = conversations.firstOrNull()
+                                if (firstChat != null) {
+                                    viewModel.openChat(firstChat)
+                                } else {
+                                    viewModel.navigateTo(AppScreen.BLUETOOTH_CENTER)
+                                }
                             }
                         )
                     }
@@ -260,31 +274,56 @@ private fun ChatsTabContent(
             }
         }
 
-        // Bluetooth Quick Connection Banner
+        // Bluetooth Quick Connection Banner (Liquid Glass Card)
         item {
-            Box(
+            LiquidGlassCard(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 12.dp, vertical = 6.dp)
-                    .clip(RoundedCornerShape(12.dp))
-                    .background(
-                        if (btState.connectionState == BluetoothConnectionState.CONNECTED) {
-                            Color(0xFF005C4B).copy(alpha = 0.35f)
-                        } else {
-                            MaterialTheme.colorScheme.surfaceVariant
-                        }
-                    )
-                    .clickable(onClick = onBluetoothBannerClicked)
-                    .padding(horizontal = 14.dp, vertical = 10.dp)
-                    .testTag("bt_quick_banner")
+                    .testTag("bt_quick_banner"),
+                shape = RoundedCornerShape(16.dp),
+                surfaceBrush = if (btState.connectionState == BluetoothConnectionState.CONNECTED) {
+                    GlassLiquidSurfaceActive
+                } else {
+                    GlassLiquidSurfaceDark
+                },
+                borderBrush = if (btState.connectionState == BluetoothConnectionState.CONNECTED) {
+                    GlassEmeraldGlowBorder
+                } else {
+                    GlassSpecularWhiteBorder
+                },
+                borderWidth = 1.dp,
+                onClick = onBluetoothBannerClicked
             ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(
-                        imageVector = Icons.Default.Bluetooth,
-                        contentDescription = "Bluetooth Status",
-                        tint = if (btState.connectionState == BluetoothConnectionState.CONNECTED) WhatsAppBadgeGreen else MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.size(24.dp)
-                    )
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 14.dp, vertical = 12.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(38.dp)
+                            .liquidGlass(
+                                shape = CircleShape,
+                                surfaceBrush = Brush.radialGradient(
+                                    listOf(
+                                        WhatsAppBadgeGreen.copy(alpha = 0.35f),
+                                        Color(0xFF005C4B).copy(alpha = 0.20f)
+                                    )
+                                ),
+                                borderBrush = GlassEmeraldGlowBorder,
+                                borderWidth = 0.8.dp
+                            ),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Bluetooth,
+                            contentDescription = "Bluetooth Status",
+                            tint = if (btState.connectionState == BluetoothConnectionState.CONNECTED) WhatsAppBadgeGreen else Color.White,
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
                     Spacer(modifier = Modifier.width(12.dp))
                     Column(modifier = Modifier.weight(1f)) {
                         Text(
@@ -311,12 +350,28 @@ private fun ChatsTabContent(
                             overflow = TextOverflow.Ellipsis
                         )
                     }
-                    Text(
-                        text = "MANAGE",
-                        fontSize = 11.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.primary
-                    )
+                    Box(
+                        modifier = Modifier
+                            .liquidGlass(
+                                shape = RoundedCornerShape(12.dp),
+                                surfaceBrush = Brush.horizontalGradient(
+                                    listOf(
+                                        WhatsAppBadgeGreen.copy(alpha = 0.20f),
+                                        Color.Transparent
+                                    )
+                                ),
+                                borderBrush = GlassEmeraldGlowBorder,
+                                borderWidth = 0.8.dp
+                            )
+                            .padding(horizontal = 10.dp, vertical = 4.dp)
+                    ) {
+                        Text(
+                            text = "MANAGE",
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = WhatsAppBadgeGreen
+                        )
+                    }
                 }
             }
         }
@@ -348,11 +403,140 @@ private fun ChatsTabContent(
         }
 
         // Chats list
-        items(filteredChats, key = { it.id }) { chat ->
-            ChatItemRow(
-                chat = chat,
-                onClick = { onChatClicked(chat) }
-            )
+        if (filteredChats.isEmpty()) {
+            item {
+                LiquidGlassCard(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 14.dp, vertical = 20.dp)
+                        .testTag("empty_state_glass_card"),
+                    shape = RoundedCornerShape(28.dp),
+                    surfaceBrush = GlassLiquidSurfaceDark,
+                    borderBrush = GlassSpecularWhiteBorder,
+                    borderWidth = 1.dp
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 20.dp, vertical = 32.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        // Ambient Liquid Glow Halo
+                        Box(
+                            modifier = Modifier
+                                .size(88.dp)
+                                .liquidGlass(
+                                    shape = CircleShape,
+                                    surfaceBrush = Brush.radialGradient(
+                                        listOf(
+                                            WhatsAppBadgeGreen.copy(alpha = 0.35f),
+                                            Color(0xFF00A884).copy(alpha = 0.15f),
+                                            Color.Transparent
+                                        )
+                                    ),
+                                    borderBrush = GlassEmeraldGlowBorder,
+                                    borderWidth = 1.2.dp
+                                ),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Bluetooth,
+                                contentDescription = "Bluetooth Offline",
+                                tint = WhatsAppBadgeGreen,
+                                modifier = Modifier.size(44.dp)
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.height(18.dp))
+
+                        Text(
+                            text = "No Connected Peers Yet",
+                            fontSize = 19.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        Text(
+                            text = "Koi device connect nahi hui abhi. Xer0byte 100% offline Bluetooth par kaam karta h bina internet k.\nJaise hi koi mobile ya Windows PC connect hoga, chat automatically yahan shuru ho jayegi.",
+                            fontSize = 13.sp,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            textAlign = TextAlign.Center,
+                            lineHeight = 19.sp
+                        )
+
+                        Spacer(modifier = Modifier.height(24.dp))
+
+                        Box(
+                            modifier = Modifier
+                                .liquidGlass(
+                                    shape = RoundedCornerShape(24.dp),
+                                    surfaceBrush = Brush.horizontalGradient(
+                                        listOf(
+                                            WhatsAppBadgeGreen,
+                                            Color(0xFF00A884)
+                                        )
+                                    ),
+                                    borderBrush = GlassSpecularWhiteBorder,
+                                    borderWidth = 1.dp
+                                )
+                                .clickable(onClick = onBluetoothBannerClicked)
+                                .padding(horizontal = 22.dp, vertical = 12.dp)
+                                .testTag("btn_connect_peer_empty"),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Icon(
+                                    imageVector = Icons.Default.Bluetooth,
+                                    contentDescription = null,
+                                    tint = Color.Black,
+                                    modifier = Modifier.size(18.dp)
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text(
+                                    text = "Connect Bluetooth Device",
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 14.sp,
+                                    color = Color.Black
+                                )
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(14.dp))
+
+                        Box(
+                            modifier = Modifier
+                                .liquidGlass(
+                                    shape = RoundedCornerShape(12.dp),
+                                    surfaceBrush = Brush.horizontalGradient(
+                                        listOf(
+                                            Color.White.copy(alpha = 0.08f),
+                                            Color.White.copy(alpha = 0.03f)
+                                        )
+                                    ),
+                                    borderBrush = GlassSpecularWhiteBorder,
+                                    borderWidth = 0.8.dp
+                                )
+                                .padding(horizontal = 12.dp, vertical = 5.dp)
+                        ) {
+                            Text(
+                                text = "Aapka Account Name: ${btState.myDeviceName}",
+                                fontSize = 11.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                color = WhatsAppBadgeGreen
+                            )
+                        }
+                    }
+                }
+            }
+        } else {
+            items(filteredChats, key = { it.id }) { chat ->
+                ChatItemRow(
+                    chat = chat,
+                    onClick = { onChatClicked(chat) }
+                )
+            }
         }
 
         // Footer notice
@@ -400,131 +584,151 @@ private fun ChatItemRow(
     )
     val avatarBg = avatarColors[chat.avatarColorIndex % avatarColors.size]
 
-    Row(
+    LiquidGlassCard(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable(onClick = onClick)
-            .padding(horizontal = 16.dp, vertical = 10.dp)
+            .padding(horizontal = 10.dp, vertical = 4.dp)
             .testTag("chat_item_${chat.id}"),
-        verticalAlignment = Alignment.CenterVertically
+        shape = RoundedCornerShape(18.dp),
+        surfaceBrush = if (chat.isOnline) GlassLiquidSurfaceActive else GlassLiquidSurfaceDark,
+        borderBrush = if (chat.isOnline) GlassEmeraldGlowBorder else GlassSpecularWhiteBorder,
+        borderWidth = 1.dp,
+        onClick = onClick
     ) {
-        // Avatar circle
-        Box(
+        Row(
             modifier = Modifier
-                .size(52.dp)
-                .background(avatarBg, shape = CircleShape),
-            contentAlignment = Alignment.Center
+                .fillMaxWidth()
+                .padding(horizontal = 14.dp, vertical = 12.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            val initial = chat.peerName.firstOrNull()?.uppercaseChar() ?: 'X'
-            Text(
-                text = initial.toString(),
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.White
-            )
-
-            // Prominent glowing green dot when connected via Bluetooth
-            if (chat.isOnline) {
-                Box(
-                    modifier = Modifier
-                        .align(Alignment.BottomEnd)
-                        .size(16.dp)
-                        .background(MaterialTheme.colorScheme.background, shape = CircleShape)
-                        .padding(2.dp)
-                        .background(WhatsAppBadgeGreen, shape = CircleShape)
-                )
-            }
-        }
-
-        Spacer(modifier = Modifier.width(14.dp))
-
-        // Chat Info
-        Column(modifier = Modifier.weight(1f)) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+            // Avatar circle
+            Box(
+                modifier = Modifier
+                    .size(52.dp)
+                    .background(avatarBg, shape = CircleShape),
+                contentAlignment = Alignment.Center
             ) {
+                val initial = chat.peerName.firstOrNull()?.uppercaseChar() ?: 'X'
+                Text(
+                    text = initial.toString(),
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White
+                )
+
+                // Prominent glowing green dot when connected via Bluetooth
+                if (chat.isOnline) {
+                    Box(
+                        modifier = Modifier
+                            .align(Alignment.BottomEnd)
+                            .size(16.dp)
+                            .background(Color(0xFF090E11), shape = CircleShape)
+                            .padding(2.dp)
+                            .background(WhatsAppBadgeGreen, shape = CircleShape)
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.width(14.dp))
+
+            // Chat Info
+            Column(modifier = Modifier.weight(1f)) {
                 Row(
-                    modifier = Modifier.weight(1f),
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
+                    Row(
+                        modifier = Modifier.weight(1f),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = chat.peerName,
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onSurface,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                        if (chat.isOnline) {
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Box(
+                                modifier = Modifier
+                                    .liquidGlass(
+                                        shape = RoundedCornerShape(8.dp),
+                                        surfaceBrush = Brush.horizontalGradient(
+                                            listOf(
+                                                WhatsAppBadgeGreen.copy(alpha = 0.25f),
+                                                Color(0xFF005C4B).copy(alpha = 0.35f)
+                                            )
+                                        ),
+                                        borderBrush = GlassEmeraldGlowBorder,
+                                        borderWidth = 0.8.dp
+                                    )
+                                    .padding(horizontal = 6.dp, vertical = 2.dp)
+                            ) {
+                                Text(
+                                    text = "ONLINE",
+                                    fontSize = 9.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = WhatsAppBadgeGreen
+                                )
+                            }
+                        }
+                    }
                     Text(
-                        text = chat.peerName,
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onSurface,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
+                        text = timeFormatted,
+                        fontSize = 12.sp,
+                        color = if (chat.unreadCount > 0) WhatsAppBadgeGreen else MaterialTheme.colorScheme.onSurfaceVariant
                     )
-                    if (chat.isOnline) {
+                }
+
+                Spacer(modifier = Modifier.height(4.dp))
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.DoneAll,
+                        contentDescription = "Read status",
+                        tint = WhatsAppCheckmarkBlue,
+                        modifier = Modifier.size(16.dp)
+                    )
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text(
+                        text = chat.lastMessage,
+                        fontSize = 14.sp,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.weight(1f)
+                    )
+
+                    if (chat.isPinned) {
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Icon(
+                            imageVector = Icons.Default.PushPin,
+                            contentDescription = "Pinned",
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.size(14.dp)
+                        )
+                    }
+
+                    if (chat.unreadCount > 0) {
                         Spacer(modifier = Modifier.width(6.dp))
                         Box(
                             modifier = Modifier
-                                .background(WhatsAppBadgeGreen.copy(alpha = 0.2f), shape = RoundedCornerShape(4.dp))
-                                .padding(horizontal = 5.dp, vertical = 2.dp)
+                                .background(WhatsAppBadgeGreen, shape = CircleShape)
+                                .padding(horizontal = 6.dp, vertical = 2.dp)
                         ) {
                             Text(
-                                text = "ONLINE",
-                                fontSize = 9.sp,
+                                text = "${chat.unreadCount}",
+                                fontSize = 11.sp,
                                 fontWeight = FontWeight.Bold,
-                                color = WhatsAppBadgeGreen
+                                color = Color.Black
                             )
                         }
-                    }
-                }
-                Text(
-                    text = timeFormatted,
-                    fontSize = 12.sp,
-                    color = if (chat.unreadCount > 0) WhatsAppBadgeGreen else MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-
-            Spacer(modifier = Modifier.height(4.dp))
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(
-                    imageVector = Icons.Default.DoneAll,
-                    contentDescription = "Read status",
-                    tint = WhatsAppCheckmarkBlue,
-                    modifier = Modifier.size(16.dp)
-                )
-                Spacer(modifier = Modifier.width(4.dp))
-                Text(
-                    text = chat.lastMessage,
-                    fontSize = 14.sp,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier.weight(1f)
-                )
-
-                if (chat.isPinned) {
-                    Spacer(modifier = Modifier.width(6.dp))
-                    Icon(
-                        imageVector = Icons.Default.PushPin,
-                        contentDescription = "Pinned",
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.size(14.dp)
-                    )
-                }
-
-                if (chat.unreadCount > 0) {
-                    Spacer(modifier = Modifier.width(6.dp))
-                    Box(
-                        modifier = Modifier
-                            .background(WhatsAppBadgeGreen, shape = CircleShape)
-                            .padding(horizontal = 6.dp, vertical = 2.dp)
-                    ) {
-                        Text(
-                            text = "${chat.unreadCount}",
-                            fontSize = 11.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = Color.Black
-                        )
                     }
                 }
             }
