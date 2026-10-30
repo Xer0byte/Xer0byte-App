@@ -61,7 +61,7 @@ jobs:
       - name: Generate Release Notes
         run: |
           cat << 'EOF' > release_body.md
-          # 🚀 Xer0byte — Offline Bluetooth Messenger (v1.0.0)
+          # 🚀 Xer0byte — Offline Bluetooth Messenger (v1.1.0)
           **Organization:** Xer0byte  
           **Founder & Owner:** Ghaznain Ahmad  
           **Architecture:** 100% Offline Bluetooth RFCOMM Mesh (Zero Internet / SIM)
@@ -70,25 +70,26 @@ jobs:
           ## ⬇️ Direct Download Links:
 
           ### 📱 For Android Users:
-          - **[👉 CLICK HERE TO DOWNLOAD Xer0byte.apk](https://github.com/${{ github.repository }}/releases/download/v1.0.0/Xer0byte.apk)**
-          - **[👉 ALTERNATE LINK (Xer0byte-Android.apk)](https://github.com/${{ github.repository }}/releases/download/v1.0.0/Xer0byte-Android.apk)**
+          - **[👉 CLICK HERE TO DOWNLOAD Xer0byte.apk (v1.1.0)](https://github.com/${{ github.repository }}/releases/download/v1.1.0/Xer0byte.apk)**
+          - **[👉 ALTERNATE LINK (Xer0byte-Android.apk)](https://github.com/${{ github.repository }}/releases/download/v1.1.0/Xer0byte-Android.apk)**
           - Or download directly from repository root: `Xer0byte.apk`
 
           ### 💻 For Windows Users (Windows 11, 10, 8, 7):
-          - **[👉 CLICK HERE FOR WINDOWS SETUP GUIDE](https://github.com/${{ github.repository }}/releases/download/v1.0.0/Xer0byte-Windows-Guide.txt)**
+          - **[👉 CLICK HERE FOR WINDOWS SETUP GUIDE](https://github.com/${{ github.repository }}/releases/download/v1.1.0/Xer0byte-Windows-Guide.txt)**
           - Supports **Windows 11 Native (WSA)**, **BlueStacks/LDPlayer**, and **Edge/Chrome Desktop PWA**!
 
           ### 🍏 For iOS (iPhone & iPad) Users:
-          - **[👉 CLICK HERE FOR iOS INSTALLATION GUIDE](https://github.com/${{ github.repository }}/releases/download/v1.0.0/Xer0byte-iOS-Guide.txt)**
+          - **[👉 CLICK HERE FOR iOS INSTALLATION GUIDE](https://github.com/${{ github.repository }}/releases/download/v1.1.0/Xer0byte-iOS-Guide.txt)**
           - **[🌐 Instant Safari Live Web App](https://ais-pre-rwnp7qqnlqk43a6wrusrox-868695915078.asia-southeast1.run.app)** (Add to Home Screen)
 
           ---
-          ### ✨ Features Included:
-          - **Official Xer0byte Logo** launcher icon and top header branding
-          - **Prominent Green Dots (`🟢`)** showing active peer-to-peer connection
-          - **Multi-Peer Simultaneous Mesh**: Connect and talk to multiple devices at the same time
-          - **WhatsApp User Interface**: 4 Tabs (Chats, Updates/Stories, Communities, Calls)
-          - **Offline Media & Calling**: Voice notes with audio waveforms, photos, live locations, documents, and Bluetooth call screen
+          ### ✨ What's New in v1.1.0:
+          - **Universal Responsive & Adaptive Layout**: Single-pane on mobile phones and two-pane list-detail on tablets/foldables.
+          - **Liquid Glass Navigation Rail**: Side rail navigation for tablets and desktop multi-window mode.
+          - **Liquid Glass Design System**: Frosted glassmorphism with specular highlights and ambient gradients.
+          - **100% English Clean Interface**: All text, instructions, and dialogs in clean, formal English.
+          - **Authentic Bluetooth Delivery Receipts**: Real `SENT`, `DELIVERED`, and `READ` status indicators over Bluetooth RFCOMM.
+          - **Official Xer0byte Branding**: Founder Ghaznain Ahmad.
           EOF
 
       - name: Publish Automated GitHub Release (Steps 2 to 5 Automated)
@@ -98,15 +99,15 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          echo "Automating Step 2, Step 3, Step 4, and Step 5..."
-          if gh release view v1.0.0 >/dev/null 2>&1; then
-            echo "Release v1.0.0 already exists, uploading/updating binaries..."
-            gh release upload v1.0.0 output_release/* --clobber
-            gh release edit v1.0.0 --notes-file release_body.md --latest
+          echo "Automating Step 2, Step 3, Step 4, and Step 5 for v1.1.0..."
+          if gh release view v1.1.0 >/dev/null 2>&1; then
+            echo "Release v1.1.0 already exists, uploading/updating binaries..."
+            gh release upload v1.1.0 output_release/* --clobber
+            gh release edit v1.1.0 --notes-file release_body.md --latest
           else
-            echo "Creating new release v1.0.0 and publishing..."
-            gh release create v1.0.0 output_release/* \
-              --title "🚀 Xer0byte v1.0.0 — Official Offline Bluetooth Messenger (Founder: Ghaznain Ahmad)" \
+            echo "Creating new release v1.1.0 and publishing..."
+            gh release create v1.1.0 output_release/* \
+              --title "🚀 Xer0byte v1.1.0 — Official Offline Bluetooth Messenger (Founder: Ghaznain Ahmad)" \
               --notes-file release_body.md \
               --latest
           fi
@@ -116,8 +117,8 @@ jobs:
         uses: softprops/action-gh-release@v2
         continue-on-error: true
         with:
-          tag_name: "v1.0.0"
-          name: "🚀 Xer0byte v1.0.0 — Official Offline Bluetooth Messenger (Founder: Ghaznain Ahmad)"
+          tag_name: "v1.1.0"
+          name: "🚀 Xer0byte v1.1.0 — Official Offline Bluetooth Messenger (Founder: Ghaznain Ahmad)"
           draft: false
           prerelease: false
           make_latest: "true"

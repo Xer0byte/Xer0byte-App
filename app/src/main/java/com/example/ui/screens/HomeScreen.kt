@@ -623,7 +623,7 @@ private fun ChatsTabContent(
                         Spacer(modifier = Modifier.height(8.dp))
 
                         Text(
-                            text = "Koi device connect nahi hui abhi. Xer0byte 100% offline Bluetooth par kaam karta h bina internet k.\nJaise hi koi mobile ya Windows PC connect hoga, chat automatically yahan shuru ho jayegi.",
+                            text = "No Bluetooth peers connected yet. Xer0byte operates 100% offline via local RFCOMM sockets with zero internet or cellular connectivity.\nAs soon as a nearby smartphone or Windows PC connects, your secure conversation will appear here automatically.",
                             fontSize = 13.sp,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             textAlign = TextAlign.Center,

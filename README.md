@@ -21,18 +21,18 @@
 
 <div align="center">
 
-### 📥 Download App
+### 📥 Download App (Version 1.1.0)
 
 <!-- Big Download Button (HTML Method) -->
 <a href="./Xer0byte.apk?raw=true">
-  <img src="https://img.shields.io/badge/Download_Xer0byte_APK-Direct_Download_(23MB)-00A884?style=for-the-badge&logo=android&logoColor=white&labelColor=128C7E" alt="Download Xer0byte APK" height="52">
+  <img src="https://img.shields.io/badge/Download_Xer0byte_APK-Direct_Download_v1.1.0_(23MB)-00A884?style=for-the-badge&logo=android&logoColor=white&labelColor=128C7E" alt="Download Xer0byte APK v1.1.0" height="52">
 </a>
 
 <br/><br/>
 
 <!-- Markdown Download Links -->
-**[👉 Click Here to Download APK (Direct Raw Link)](./Xer0byte.apk?raw=true)** &nbsp;|&nbsp; 
-**[👉 Click Here to Download from Latest Release](../../releases/latest/download/Xer0byte.apk)** &nbsp;|&nbsp; 
+**[👉 Click Here to Download APK v1.1.0 (Direct Raw Link)](./Xer0byte.apk?raw=true)** &nbsp;|&nbsp; 
+**[👉 Click Here to Download from Latest Release (v1.1.0)](../../releases/latest/download/Xer0byte.apk)** &nbsp;|&nbsp; 
 **[👉 View Repository File (Xer0byte.apk)](./Xer0byte.apk)**
 
 </div>
@@ -44,7 +44,7 @@
 ### 🤖 Automatic on Every Push (Sab Kuch Khud Ho Jayega)
 Aapke repository me **GitHub Actions Workflow** pehle se set hai! Jab bhi aap code push karenge:
 1. GitHub Actions khud app ko compile karega.
-2. Naya Release tag banayega (`v1.0.0`).
+2. Naya Release tag banayega (`v1.1.0`).
 3. Dono binary files (`Xer0byte.apk` aur `Xer0byte-Android.apk`) ko release me attach karke publish kar dega.
 4. **Zaroori Setting:** Apne GitHub repo me **Settings** ➡️ **Actions** ➡️ **General** ➡️ **Workflow permissions** me jakar **"Read and write permissions"** select karke **Save** kar dein taake GitHub Actions bina kisi rukawat ke release publish kar sake.
 
@@ -52,8 +52,8 @@ Aapke repository me **GitHub Actions Workflow** pehle se set hai! Jab bhi aap co
 Agar aap khud manual release banana chahein:
 1. Apne GitHub repository par jayein.
 2. Right side par **Releases** par click karein aur **"Create a new release"** par click karein.
-3. **Choose a tag** par click karke tag ka naam likhein: `v1.0.0` aur **Create new tag** par click karein.
-4. Release Title likhein: `🚀 Xer0byte v1.0.0 — Official Offline Bluetooth Messenger`.
+3. **Choose a tag** par click karke tag ka naam likhein: `v1.1.0` aur **Create new tag** par click karein.
+4. Release Title likhein: `🚀 Xer0byte v1.1.0 — Official Offline Bluetooth Messenger`.
 5. Niche **"Attach binaries by dropping them here..."** box me is repo me mojood `Xer0byte.apk` file ko drag & drop kar dein.
 6. File upload hone ke baad **"Publish release"** ke green button par click kar dein.
 7. Publish hone ke baad `.apk` file par right-click karke **"Copy link address"** kar lein—yeh aapka permanent direct download link ban jayega!

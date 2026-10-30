@@ -535,7 +535,7 @@ class BluetoothChatManager(private val context: Context) {
                     id = UUID.randomUUID().toString(),
                     type = "TEXT",
                     senderName = name,
-                    text = "🟢 Salam! Bluetooth connection established. Xer0byte offline mesh is active (Zero Internet / SIM).",
+                    text = "🟢 Connected! Bluetooth link established. Xer0byte offline mesh is active (Zero Internet / SIM).",
                     timestamp = System.currentTimeMillis()
                 )
             )
